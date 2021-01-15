@@ -1,0 +1,29 @@
+[
+  {
+    "name": "Codemasters",
+    "description": "Codemasters has only one goal. We make you success!",
+    "website": "https://codemasters.com",
+    "phone": "(02) 123-45678",
+    "email": "enroll@codemasters.com",
+    "address": "台北市大安區羅斯福路四段1號",
+    "UserId": 3
+  },
+  {
+    "name": "瑜珈社",
+    "description": "體會心中的靜謐，快來參加各類優惠課程!",
+    "website": "https://yoga.com",
+    "phone": "(02) 234-56789",
+    "email": "enroll@yoga.com",
+    "address": "台北市信義區信義路五段10號",
+    "UserId": 4
+  },
+  {
+    "name": "花花世界",
+    "description": "想在家裡擺上一盆好花？別錯過我們專業的花藝課程!",
+    "website": "https://flower.com",
+    "phone": "(02) 345-67890",
+    "email": "enroll@flower.com",
+    "address": "台北市大安區新生南路二段1號",
+    "UserId": 7
+  }
+]

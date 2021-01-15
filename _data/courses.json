@@ -1,0 +1,86 @@
+[
+  {
+    "name": "Codemasters course1",
+    "description": "Codemasters course1 description...",
+    "hours": 20,
+    "tuition": 10000,
+    "GroupId": 1
+  },
+  {
+    "name": "Codemasters course2",
+    "description": "Codemasters course2 description...",
+    "hours": 18,
+    "tuition": 9500,
+    "GroupId": 1
+  },
+  {
+    "name": "Codemasters course3",
+    "description": "Codemasters course3 description...",
+    "hours": 30,
+    "tuition": 13000,
+    "GroupId": 1
+  },
+  {
+    "name": "Codemasters course4",
+    "description": "Codemasters course4 description...",
+    "hours": 22,
+    "tuition": 10500,
+    "GroupId": 1
+  },
+  {
+    "name": "Codemasters course5",
+    "description": "Codemasters course5 description...",
+    "hours": 10,
+    "tuition": 5000,
+    "GroupId": 1
+  },
+  {
+    "name": "Codemasters course6",
+    "description": "Codemasters course6 description...",
+    "hours": 48,
+    "tuition": 23000,
+    "GroupId": 1
+  },
+  {
+    "name": "Yoga course1",
+    "description": "Yoga course1 description...",
+    "hours": 8,
+    "tuition": 6500,
+    "GroupId": 2
+  },
+  {
+    "name": "Yoga course2",
+    "description": "Yoga course2 description...",
+    "hours": 3,
+    "tuition": 3000,
+    "GroupId": 2
+  },
+  {
+    "name": "Yoga course3",
+    "description": "Yoga course3 description...",
+    "hours": 10,
+    "tuition": 10000,
+    "GroupId": 2
+  },
+  {
+    "name": "Flower course1",
+    "description": "Flower course1 description...",
+    "hours": 5,
+    "tuition": 6000,
+    "GroupId": 3
+  },
+  {
+    "name": "Flower course2",
+    "description": "Flower course2 description...",
+    "hours": 3,
+    "tuition": 3000,
+    "GroupId": 3
+  },
+  {
+    "name": "Flower course3",
+    "description": "Flower course3 description...",
+    "hours": 10,
+    "tuition": 9500,
+    "GroupId": 3
+  }
+]
