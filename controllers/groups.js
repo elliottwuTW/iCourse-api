@@ -17,12 +17,6 @@ exports.getGroups = async (req, res, next) => {
 // @access    Public
 exports.getGroup = async (req, res, next) => {
   const group = await Group.findByPk(req.params.id)
-  if (!group) {
-    return res.status(404).json({
-      status: 'error',
-      message: `group with id ${req.params.id} not exist`
-    })
-  }
 
   return res.status(200).json({
     status: 'success',
@@ -48,12 +42,6 @@ exports.createGroup = async (req, res, next) => {
 // @access    Private
 exports.updateGroup = async (req, res, next) => {
   const group = await Group.findByPk(req.params.id)
-  if (!group) {
-    return res.status(404).json({
-      status: 'error',
-      message: `group with id ${req.params.id} not exist`
-    })
-  }
 
   // update the instance
   await group.update(req.body)
@@ -69,12 +57,6 @@ exports.updateGroup = async (req, res, next) => {
 // @access    Private
 exports.deleteGroup = async (req, res, next) => {
   const group = await Group.findByPk(req.params.id)
-  if (!group) {
-    return res.status(404).json({
-      status: 'error',
-      message: `group with id ${req.params.id} not exist`
-    })
-  }
 
   // delete the instance
   await group.destroy()

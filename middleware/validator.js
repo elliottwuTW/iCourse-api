@@ -15,6 +15,15 @@ const checkValidation = (errorStatus) => (req, res, next) => {
   }
 }
 
+// check if the resource exists
+exports.ifExist = model => async (req, res, next) => {
+  const resource = await model.findByPk(req.params.id)
+  if (!resource) {
+    return next(new ErrorRes(404, `Resource with id ${req.params.id} does not exist`))
+  }
+  next()
+}
+
 // check if all needed fields of User exist
 exports.userInfoExist = [
   body('name').exists().withMessage('Name is required'),
