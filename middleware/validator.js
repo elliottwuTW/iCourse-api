@@ -2,6 +2,8 @@ const { body, validationResult } = require('express-validator')
 const { User } = require('../models')
 const Op = require('sequelize').Op
 
+const ErrorRes = require('../utils/ErrorRes')
+
 // check the validation result
 const checkValidation = (errorStatus) => (req, res, next) => {
   let errors = validationResult(req).errors
@@ -9,10 +11,7 @@ const checkValidation = (errorStatus) => (req, res, next) => {
   if (errors.length === 0) {
     next()
   } else {
-    return res.status(errorStatus).json({
-      status: 'error',
-      message: errors
-    })
+    return next(new ErrorRes(errorStatus, errors))
   }
 }
 
@@ -22,7 +21,8 @@ exports.userInfoExist = [
   body('email').exists().withMessage('Email is required'),
   body('role').exists().withMessage('User role is required'),
   body('password').exists().withMessage('Password is required'),
-  body('passwordConfirm').exists().withMessage('Password-confirmation is required')
+  body('passwordConfirm').exists().withMessage('Password-confirmation is required'),
+  checkValidation(422)
 ]
 
 // only check updated field of User
@@ -39,7 +39,7 @@ exports.userInfo = [
         where: { email: value, id: { [Op.ne]: req.user.id } }
       })
       if (user) {
-        throw new Error('Email is in use')
+        throw new ErrorRes(400, 'Email is in use')
       }
       return true
     }),
@@ -50,10 +50,11 @@ exports.userInfo = [
     .optional()
     .custom((value, { req }) => {
       if (value !== req.body.passwordConfirm) {
-        throw new Error('Password confirmation does not match password')
+        throw new ErrorRes(400, 'Password confirmation does not match password')
       }
       return true
-    })
+    }),
+  checkValidation(400)
 ]
 
 // check if all needed fields of Group exist
@@ -85,7 +86,7 @@ exports.groupInfo = [
   body('email').trim()
     .optional()
     .isEmail().withMessage('Please add a valid email'),
-  checkValidation(400)
+  checkValidation(422)
 ]
 
 // check if all needed fields of Course exist

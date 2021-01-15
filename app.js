@@ -3,6 +3,7 @@ const dotenv = require('dotenv')
 const morgan = require('morgan')
 
 const routes = require('./routes/index')
+const errorHandler = require('./middleware/error')
 
 dotenv.config()
 
@@ -19,6 +20,9 @@ app.use(express.json())
 
 // Route
 app.use('/api/v1', routes)
+
+// Error handler
+app.use(errorHandler)
 
 const server = app.listen(PORT, () => {
   console.log(`Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`)
