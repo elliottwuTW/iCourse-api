@@ -1,4 +1,4 @@
-const { Group, User } = require('../models')
+const { Group } = require('../models')
 
 // @desc      Get all groups
 // @route     GET /api/v1/groups
