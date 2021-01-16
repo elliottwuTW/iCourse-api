@@ -2,6 +2,7 @@
 const {
   Model
 } = require('sequelize')
+const geocoder = require('../utils/geocoder')
 module.exports = (sequelize, DataTypes) => {
   class Group extends Model {
     /**
@@ -60,5 +61,19 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Group'
   })
+
+  // generate the location field
+  Group.beforeSave(async (group) => {
+    const geoLocation = await geocoder.geocode(group.address)
+
+    // reassign the address
+    group.address = geoLocation[0].formattedAddress
+
+    // location
+    const lat = geoLocation[0].latitude
+    const long = geoLocation[0].longitude
+    group.location = sequelize.literal(`ST_GeomFromText('POINT(${lat} ${long})', 4326)`)
+  })
+
   return Group
 }
