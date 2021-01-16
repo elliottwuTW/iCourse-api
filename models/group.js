@@ -3,6 +3,7 @@ const {
   Model
 } = require('sequelize')
 const geocoder = require('../utils/geocoder')
+const generateGeoPoint = require('../utils/generateGeoPoint')
 module.exports = (sequelize, DataTypes) => {
   class Group extends Model {
     /**
@@ -72,7 +73,7 @@ module.exports = (sequelize, DataTypes) => {
     // location
     const lat = geoLocation[0].latitude
     const long = geoLocation[0].longitude
-    group.location = sequelize.literal(`ST_GeomFromText('POINT(${lat} ${long})', 4326)`)
+    group.location = generateGeoPoint(lat, long)
   })
 
   return Group
