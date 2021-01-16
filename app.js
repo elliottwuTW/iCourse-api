@@ -1,6 +1,7 @@
 const express = require('express')
 const dotenv = require('dotenv')
 const morgan = require('morgan')
+require('colors')
 
 const routes = require('./routes/index')
 const errorHandler = require('./middleware/error')
@@ -25,11 +26,11 @@ app.use('/api/v1', routes)
 app.use(errorHandler)
 
 const server = app.listen(PORT, () => {
-  console.log(`Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`)
+  console.log(`Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`.yellow.bold)
 })
 
 // Unhandled promise rejection
 process.on('unhandledRejection', (err, promise) => {
-  console.error(`Unhandled Rejection catched: ${err.message}`)
+  console.error(`Unhandled Rejection catched: ${err.message}`.red.bold)
   server.close(() => process.exit(1))
 })
