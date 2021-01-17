@@ -1,17 +1,18 @@
 const { body, validationResult } = require('express-validator')
 const { User } = require('../models')
-const Op = require('sequelize').Op
 
 const ErrorRes = require('../utils/ErrorRes')
 
 // check the validation result
-const checkValidation = (errorStatus) => (req, res, next) => {
+exports.checkValidation = (req, res, next) => {
   let errors = validationResult(req).errors
+  console.log('into check validation')
+  console.log('errors: ', errors)
   errors = errors.map(error => error.msg)
   if (errors.length === 0) {
     next()
   } else {
-    return next(new ErrorRes(errorStatus, errors))
+    return next(new ErrorRes(400, errors))
   }
 }
 
@@ -25,36 +26,48 @@ exports.ifExist = model => async (req, res, next) => {
 }
 
 // check if all needed fields of User exist
+exports.loginInfoExist = [
+  body('email').exists().withMessage('Email is required'),
+  body('password').exists().withMessage('Password is required')
+]
+
+// check if all needed fields of User exist
 exports.userInfoExist = [
   body('name').exists().withMessage('Name is required'),
   body('email').exists().withMessage('Email is required'),
   body('role').exists().withMessage('User role is required'),
   body('password').exists().withMessage('Password is required'),
-  body('passwordConfirm').exists().withMessage('Password-confirmation is required'),
-  checkValidation(422)
+  body('passwordConfirm').exists().withMessage('Password-confirmation is required')
 ]
 
 // only check updated field of User
-exports.userInfo = [
+exports.userNameCheck = [
   body('name').trim()
     .optional()
-    .isLength({ min: 3, max: 50 }).withMessage('Name length should be between 3 and 50 characters'),
+    .isLength({ min: 3, max: 50 }).withMessage('Name length should be between 3 and 50 characters')
+]
+exports.userEmailCheck = [
   body('email').trim()
     .optional()
     .isEmail().withMessage('Please add a valid email')
-    // if email is in use
+]
+exports.userEmailInUseCheck = [
+  body('email').trim()
+    .optional()
     .custom(async (value, { req }) => {
-      const user = await User.findOne({
-        where: { email: value, id: { [Op.ne]: req.user.id } }
-      })
+      const user = await User.findOne({ where: { email: value } })
       if (user) {
         throw new ErrorRes(400, 'Email is in use')
       }
       return true
-    }),
+    })
+]
+exports.userRoleCheck = [
   body('role').trim()
     .optional()
-    .isIn(['user', 'publisher']).withMessage('User role can only be user or publisher'),
+    .isIn(['user', 'publisher']).withMessage('User role can only be user or publisher')
+]
+exports.userPasswordCheck = [
   body('password').trim()
     .optional()
     .custom((value, { req }) => {
@@ -62,8 +75,7 @@ exports.userInfo = [
         throw new ErrorRes(400, 'Password confirmation does not match password')
       }
       return true
-    }),
-  checkValidation(400)
+    })
 ]
 
 // check if all needed fields of Group exist
@@ -73,8 +85,7 @@ exports.groupInfoExist = [
   body('website').exists().withMessage('Website is required'),
   body('phone').exists().withMessage('Phone is required'),
   body('email').exists().withMessage('Email is required'),
-  body('address').exists().withMessage('Address is required'),
-  checkValidation(422)
+  body('address').exists().withMessage('Address is required')
 ]
 
 // only check updated field of Group
@@ -94,8 +105,7 @@ exports.groupInfo = [
     .matches(/^\(?([0-9]{2})\)?[-\s]?([0-9]{3})[-\s]?([0-9]{4,5})$/).withMessage('Phone format is not allowed'),
   body('email').trim()
     .optional()
-    .isEmail().withMessage('Please add a valid email'),
-  checkValidation(422)
+    .isEmail().withMessage('Please add a valid email')
 ]
 
 // check if all needed fields of Course exist
@@ -103,8 +113,7 @@ exports.courseInfoExist = [
   body('name').exists().withMessage('Name is required'),
   body('description').exists().withMessage('Description is required'),
   body('hours').exists().withMessage('Course duration is required'),
-  body('tuition').exists().withMessage('Tuition is required'),
-  checkValidation(422)
+  body('tuition').exists().withMessage('Tuition is required')
 ]
 
 // only check updated field of Course
@@ -120,15 +129,13 @@ exports.courseInfo = [
     .isInt().withMessage('Course duration must be integer'),
   body('tuition').trim()
     .optional()
-    .isInt().withMessage('Tuition must be integer'),
-  checkValidation(400)
+    .isInt().withMessage('Tuition must be integer')
 ]
 
 // check if all needed fields of Review exist
 exports.reviewInfoExist = [
   body('title').exists().withMessage('Title is required'),
-  body('rating').exists().withMessage('Rating is required'),
-  checkValidation(422)
+  body('rating').exists().withMessage('Rating is required')
 ]
 
 // only check updated field of Review
@@ -141,6 +148,5 @@ exports.reviewInfo = [
     .isLength({ max: 250 }).withMessage('Description should not be longer than 250 characters'),
   body('rating').trim()
     .optional()
-    .isInt({ min: 1, max: 10 }).withMessage('Please add a rating between 1 and 10'),
-  checkValidation(400)
+    .isInt({ min: 1, max: 10 }).withMessage('Please add a rating between 1 and 10')
 ]

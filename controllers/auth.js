@@ -1,3 +1,5 @@
+const jwt = require('jsonwebtoken')
+
 const { User } = require('../models')
 
 const asyncUtil = require('../middleware/asyncUtil')
@@ -13,4 +15,14 @@ exports.login = asyncUtil(async (req, res, next) => {
   if (!isMatch) {
     return next(new ErrorRes(401, 'Please check your password'))
   }
+
+  // login successfully, send response back with token
+  const payload = { id: user.id }
+  const token = jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRE
+  })
+  return res.status(200).json({
+    status: 'success',
+    token
+  })
 })
