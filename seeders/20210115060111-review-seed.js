@@ -1,6 +1,6 @@
 'use strict'
 
-const { User, Course } = require('../models')
+const { User, Course, Review } = require('../models')
 
 function randomInteger (num) {
   return Math.floor(Math.random() * num)
@@ -23,7 +23,10 @@ module.exports = {
       updatedAt: new Date()
     }))
 
-    await queryInterface.bulkInsert('Reviews', reviewData, {})
+    await Review.bulkCreate(reviewData, {
+      validate: true,
+      individualHooks: true
+    })
   },
 
   down: async (queryInterface, Sequelize) => {

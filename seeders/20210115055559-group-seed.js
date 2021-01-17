@@ -7,9 +7,14 @@ const groupData = groups.map(group => ({
   updatedAt: new Date()
 }))
 
+const { Group } = require('../models')
+
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkInsert('Groups', groupData, {})
+    await Group.bulkCreate(groupData, {
+      validate: true,
+      individualHooks: true
+    })
   },
 
   down: async (queryInterface, Sequelize) => {

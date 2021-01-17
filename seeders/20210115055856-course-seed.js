@@ -7,9 +7,14 @@ const courseData = courses.map(course => ({
   updatedAt: new Date()
 }))
 
+const { Course } = require('../models')
+
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkInsert('Courses', courseData, {})
+    await Course.bulkCreate(courseData, {
+      validate: true,
+      individualHooks: true
+    })
   },
 
   down: async (queryInterface, Sequelize) => {

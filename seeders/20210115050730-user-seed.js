@@ -7,9 +7,14 @@ const userData = users.map(user => ({
   updatedAt: new Date()
 }))
 
+const { User } = require('../models')
+
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkInsert('Users', userData, {})
+    await User.bulkCreate(userData, {
+      validate: true,
+      individualHooks: true
+    })
   },
 
   down: async (queryInterface, Sequelize) => {

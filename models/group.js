@@ -63,10 +63,12 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'Group'
   })
 
-  // generate the location field
   Group.beforeSave(async (group) => {
+    // ignore unless the address is modified
+    if (!group.changed('address')) {
+      return
+    }
     const geoLocation = await geocoder.geocode(group.address)
-
     // reassign the address
     group.address = geoLocation[0].formattedAddress
 
