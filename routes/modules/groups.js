@@ -32,7 +32,7 @@ router.put('/:id',
   ifExist(Group),
   upload.single('photo'),
   // validation
-  groupInfoExist, checkEmail, checkGroupName, checkGroupDescr, checkGroupWebsite, checkGroupPhone, checkValidation,
+  checkEmail, checkGroupName, checkGroupDescr, checkGroupWebsite, checkGroupPhone, checkValidation,
   updateGroup)
 
 router.delete('/:id', protect, permit('publisher', 'admin'), ifExist(Group), deleteGroup)

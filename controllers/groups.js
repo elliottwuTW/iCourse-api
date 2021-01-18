@@ -4,6 +4,7 @@ const asyncUtil = require('../middleware/asyncUtil')
 
 const uploadImage = require('../utils/uploadImage')
 const generateGeoPoint = require('../utils/generateGeoPoint')
+const ErrorRes = require('../utils/ErrorRes')
 
 // @desc      Get all groups
 // @route     GET /api/v1/groups
@@ -49,7 +50,12 @@ exports.getGroupsInRadius = asyncUtil(async (req, res, next) => {
 // @route     POST /api/v1/groups
 // @access    Protect
 exports.createGroup = asyncUtil(async (req, res, next) => {
-  req.body.UserId = req.user.id
+  // Only one group founded by one publisher account
+  const publishedGroup = await Group.findOne({ where: { UserId: req.user.id } })
+  if (publishedGroup && req.user.role !== 'admin') {
+    return next(new ErrorRes(400, `User with id ${req.user.id} has already published a group '${publishedGroup.name}'`))
+  }
+
   // upload file or not
   if (req.file) {
     const imgURL = await uploadImage(req.file)
@@ -57,6 +63,7 @@ exports.createGroup = asyncUtil(async (req, res, next) => {
   } else {
     req.body.photo = null
   }
+  req.body.UserId = req.user.id
   const group = await Group.create(req.body)
 
   return res.status(201).json({
@@ -69,12 +76,16 @@ exports.createGroup = asyncUtil(async (req, res, next) => {
 // @route     PUT /api/v1/groups/:id
 // @access    Protect
 exports.updateGroup = asyncUtil(async (req, res, next) => {
+  const group = await Group.findByPk(req.params.id)
+  if (req.user.id !== group.UserId && req.user.role !== 'admin') {
+    return next(new ErrorRes(401, 'Not authorized to update this group'))
+  }
+
   // upload file or not
   if (req.file) {
     const imgURL = await uploadImage(req.file)
     req.body.photo = imgURL.data.link
   }
-  const group = await Group.findByPk(req.params.id)
   // update the instance
   await group.update(req.body)
 
@@ -89,6 +100,9 @@ exports.updateGroup = asyncUtil(async (req, res, next) => {
 // @access    Protect
 exports.deleteGroup = asyncUtil(async (req, res, next) => {
   const group = await Group.findByPk(req.params.id)
+  if (req.user.id !== group.UserId && req.user.role !== 'admin') {
+    return next(new ErrorRes(401, 'Not authorized to delete this group'))
+  }
 
   // delete the instance
   await group.destroy()
