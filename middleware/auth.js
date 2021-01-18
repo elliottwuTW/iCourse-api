@@ -4,6 +4,7 @@ const { User } = require('../models')
 const asyncUtil = require('../middleware/asyncUtil')
 const ErrorRes = require('../utils/ErrorRes')
 
+// protect routes by checking the jwt
 exports.protect = asyncUtil(async (req, res, next) => {
   let token
   // parse the token
@@ -21,6 +22,6 @@ exports.protect = asyncUtil(async (req, res, next) => {
     req.user = await User.findByPk(payload.id)
     next()
   } catch (err) {
-    return next(new ErrorRes(401, 'No authorization to access. Please login to get a new token!'))
+    return next(new ErrorRes(401, 'Token problem. Please login to get a new token!'))
   }
 })

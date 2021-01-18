@@ -1,10 +1,10 @@
 const jwt = require('jsonwebtoken')
 
 const { User } = require('../models')
-
 const asyncUtil = require('../middleware/asyncUtil')
 const ErrorRes = require('../utils/ErrorRes')
 
+// handle the login request
 exports.login = asyncUtil(async (req, res, next) => {
   const { email, password } = req.body
   const user = await User.findOne({ where: { email } })

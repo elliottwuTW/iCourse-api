@@ -47,7 +47,7 @@ exports.getGroupsInRadius = asyncUtil(async (req, res, next) => {
 
 // @desc      Create a new group
 // @route     POST /api/v1/groups
-// @access    Private
+// @access    Protect
 exports.createGroup = asyncUtil(async (req, res, next) => {
   req.body.UserId = req.user.id
   // upload file or not
@@ -67,7 +67,7 @@ exports.createGroup = asyncUtil(async (req, res, next) => {
 
 // @desc      Update a group
 // @route     PUT /api/v1/groups/:id
-// @access    Private
+// @access    Protect
 exports.updateGroup = asyncUtil(async (req, res, next) => {
   // upload file or not
   if (req.file) {
@@ -86,7 +86,7 @@ exports.updateGroup = asyncUtil(async (req, res, next) => {
 
 // @desc      Delete a group
 // @route     DELETE /api/v1/groups/:id
-// @access    Private
+// @access    Protect
 exports.deleteGroup = asyncUtil(async (req, res, next) => {
   const group = await Group.findByPk(req.params.id)
 

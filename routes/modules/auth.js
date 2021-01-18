@@ -1,14 +1,15 @@
 const express = require('express')
 const router = express.Router()
 
+// request handlers
 const { login } = require('../../controllers/auth')
 
-const validator = require('../../middleware/validator')
+// middleware
+const { loginInfoExist, checkEmail, checkValidation } = require('../../middleware/validator')
 
+// routes
 router.post('/login',
-  validator.loginInfoExist,
-  validator.userEmailCheck,
-  validator.checkValidation,
+  loginInfoExist, checkEmail, checkValidation,
   login)
 
 module.exports = router
