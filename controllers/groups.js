@@ -10,12 +10,9 @@ const ErrorRes = require('../utils/ErrorRes')
 // @route     GET /api/v1/groups
 // @access    Public
 exports.getGroups = asyncUtil(async (req, res, next) => {
-  const groups = await Group.findAll()
+  const result = res.queryResult
 
-  return res.status(200).json({
-    status: 'success',
-    data: groups
-  })
+  return res.status(200).json(result)
 })
 
 // @desc      Get single group
