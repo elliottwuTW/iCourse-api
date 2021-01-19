@@ -5,8 +5,10 @@
  */
 const asyncUtil = require('./asyncUtil')
 const Op = require('sequelize').Op
-const query = (model, include = []) => asyncUtil(async (req, res, next) => {
-  let option = {}
+const { sequelize } = require('../models')
+const generateGeoPoint = require('../utils/generateGeoPoint')
+const query = (model, include = [], ...flag) => asyncUtil(async (req, res, next) => {
+  let queryOption = {}
 
   const reqQuery = { ...req.query }
 
@@ -48,19 +50,19 @@ const query = (model, include = []) => asyncUtil(async (req, res, next) => {
       })
     }
   })
-  option = { ...option, where }
+  queryOption = { ...queryOption, where }
 
   // attributes
   // eg. attributes=name,phone
   if (req.query.attributes) {
     const attributes = req.query.attributes.split(',').map(item => item.trim())
-    option = { ...option, attributes }
+    queryOption = { ...queryOption, attributes }
   }
 
   // order
   // eg. order=-createdAt,+averageCost
   if (!req.query.order) {
-    option = { ...option, order: [['createdAt', 'DESC']] }
+    queryOption = { ...queryOption, order: [['createdAt', 'DESC']] }
   } else {
     const orderStrArr = req.query.order.split(',').map(item => item.trim())
     const order = []
@@ -76,7 +78,7 @@ const query = (model, include = []) => asyncUtil(async (req, res, next) => {
 
       order.push((isDesc ? [orderItem, 'DESC'] : [orderItem, 'ASC']))
     })
-    option = { ...option, order }
+    queryOption = { ...queryOption, order }
   }
 
   // pagination
@@ -85,17 +87,34 @@ const query = (model, include = []) => asyncUtil(async (req, res, next) => {
   const limit = Number(req.query.limit) || DEFAULT_PAGE_LIMIT
   const page = Number(req.query.page) || 1
   const offset = (page - 1) * limit
-  option = { ...option, offset, limit }
+  queryOption = { ...queryOption, offset, limit }
+
+  // ONLY FOR GROUP : getGroupsInRadius
+  if (model.name === 'Group' && flag.includes('inRadius')) {
+    const distance = Number(req.params.radius) * 1000
+    const currentLocation = generateGeoPoint(req.params.lat, req.params.long)
+    // add geometry constraint
+    queryOption = {
+      ...queryOption,
+      where: {
+        [Op.and]: [
+          where,
+          sequelize.where(sequelize.fn('ST_Distance_Sphere', sequelize.col('location'), currentLocation), '<=', distance)
+        ]
+      }
+    }
+  }
 
   // execute the finder
-  const { count, rows } = await model.findAndCountAll({
+  const option = {
     // get the result of "count" right
     distinct: true,
     include,
     // transform into nested object
     nest: (include.length !== 0),
-    ...option
-  })
+    ...queryOption
+  }
+  const { count, rows } = await model.findAndCountAll(option)
 
   // page info
   const pagination = {}

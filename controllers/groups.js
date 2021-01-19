@@ -1,15 +1,23 @@
-const { Group, sequelize } = require('../models')
+const { Group } = require('../models')
 
 const asyncUtil = require('../middleware/asyncUtil')
 
 const uploadImage = require('../utils/uploadImage')
-const generateGeoPoint = require('../utils/generateGeoPoint')
 const ErrorRes = require('../utils/ErrorRes')
 
 // @desc      Get all groups
 // @route     GET /api/v1/groups
 // @access    Public
 exports.getGroups = asyncUtil(async (req, res, next) => {
+  const result = res.queryResult
+
+  return res.status(200).json(result)
+})
+
+// @desc      Get groups within an radius
+// @route     GET /api/v1/groups/radius/:lat/:long/:radius
+// @access    Public
+exports.getGroupsInRadius = asyncUtil(async (req, res, next) => {
   const result = res.queryResult
 
   return res.status(200).json(result)
@@ -24,22 +32,6 @@ exports.getGroup = asyncUtil(async (req, res, next) => {
   return res.status(200).json({
     status: 'success',
     data: group
-  })
-})
-
-// @desc      Get groups within an radius
-// @route     GET /api/v1/groups/radius/:lat/:long/:radius
-// @access    Public
-exports.getGroupsInRadius = asyncUtil(async (req, res, next) => {
-  const distance = Number(req.params.radius) * 1000
-  const currentLocation = generateGeoPoint(req.params.lat, req.params.long)
-  const groups = await Group.findAll({
-    where: sequelize.where(sequelize.fn('ST_Distance_Sphere', sequelize.col('location'), currentLocation), '<=', distance)
-  })
-
-  return res.status(200).json({
-    status: 'success',
-    data: groups
   })
 })
 

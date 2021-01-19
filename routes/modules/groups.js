@@ -15,8 +15,12 @@ const { ifExist, groupInfoExist, checkValidation, checkEmail, checkGroupName, ch
 const query = require('../../middleware/query')
 
 // routes
-router.get('/', query(Group, [{ model: Course, attributes: ['id', 'name', 'description'] }]), getGroups)
-router.get('/radius/:lat/:long/:radius', getGroupsInRadius)
+router.get('/',
+  query(Group, [{ model: Course, attributes: ['id', 'name', 'description'] }]),
+  getGroups)
+router.get('/radius/:lat/:long/:radius',
+  query(Group, [{ model: Course, attributes: ['id', 'name', 'description'] }], 'inRadius'),
+  getGroupsInRadius)
 router.get('/:id', ifExist(Group), getGroup)
 
 router.post('/',
