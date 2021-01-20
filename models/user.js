@@ -4,6 +4,7 @@ const {
 } = require('sequelize')
 const bcrypt = require('bcryptjs')
 const crypto = require('crypto')
+const jwt = require('jsonwebtoken')
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -73,8 +74,18 @@ module.exports = (sequelize, DataTypes) => {
     return await bcrypt.compare(enteredPassword, this.password)
   }
 
+  // get jwt token
+  User.prototype.getJwtToken = function () {
+    const payload = { id: this.id }
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRE
+    })
+
+    return token
+  }
+
   // get reset token
-  User.prototype.getResetPasswordToken = async function () {
+  User.prototype.getResetPasswordToken = function () {
     const resetToken = crypto.randomBytes(20).toString('hex')
 
     // hash the token and store

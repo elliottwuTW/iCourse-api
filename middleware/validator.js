@@ -33,7 +33,9 @@ exports.loginInfoExist = [
 exports.userInfoExist = [
   body('name').exists().withMessage('Name is required'),
   body('email').exists().withMessage('Email is required'),
-  body('role').exists().withMessage('User role is required'),
+  body('role').exists().withMessage('User role is required')
+]
+exports.passwordExist = [
   body('password').exists().withMessage('Password is required'),
   body('passwordConfirm').exists().withMessage('Password-confirmation is required')
 ]

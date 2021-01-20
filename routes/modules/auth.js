@@ -2,10 +2,10 @@ const express = require('express')
 const router = express.Router()
 
 // request handlers
-const { login, forgotPassword } = require('../../controllers/auth')
+const { login, forgotPassword, resetPassword } = require('../../controllers/auth')
 
 // middleware
-const { loginInfoExist, checkEmail, checkValidation } = require('../../middleware/validator')
+const { loginInfoExist, passwordExist, checkEmail, checkUserPassword, checkValidation } = require('../../middleware/validator')
 
 // routes
 router.post('/login',
@@ -13,5 +13,6 @@ router.post('/login',
   login)
 
 router.post('/forgotpassword', checkEmail, checkValidation, forgotPassword)
+router.put('/resetpassword/:token', passwordExist, checkUserPassword, checkValidation, resetPassword)
 
 module.exports = router

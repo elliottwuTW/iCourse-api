@@ -1,8 +1,10 @@
-const jwt = require('jsonwebtoken')
-
 const { User } = require('../models')
+const Op = require('sequelize').Op
+const crypto = require('crypto')
+
 const asyncUtil = require('../middleware/asyncUtil')
 const ErrorRes = require('../utils/ErrorRes')
+const sendEmail = require('../utils/sendEmail')
 
 // @desc      User login
 // @route     POST /api/v1/auth/login
@@ -18,15 +20,7 @@ exports.login = asyncUtil(async (req, res, next) => {
     return next(new ErrorRes(401, 'Please check your password'))
   }
 
-  // login successfully, send response back with token
-  const payload = { id: user.id }
-  const token = jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRE
-  })
-  return res.status(200).json({
-    status: 'success',
-    token
-  })
+  responseWithToken(res, user)
 })
 
 // @desc      Forgot password
@@ -43,8 +37,68 @@ exports.forgotPassword = asyncUtil(async (req, res, next) => {
   const token = user.getResetPasswordToken()
   await user.save()
 
+  // send email
+  try {
+    const resetURL = `${req.protocol}://${req.get('host')}/api/v1/auth/resetpassword/${token}`
+    await sendEmail({
+      email: user.email,
+      subject: 'Reset password instructions for iCourse account',
+      message: `
+      \n
+      Someone has requested a link to change your password.
+      \n
+      You can do this by sending a PUT request to: \n${resetURL}
+      \n
+      The URL expires after 10 minutes.`
+    })
+
+    return res.status(200).json({
+      status: 'success',
+      data: 'Email sent'
+    })
+  } catch (err) {
+    console.error(err)
+
+    // reset token info in db
+    user.resetPasswordToken = null
+    user.resetPasswordExpire = null
+    await user.save()
+
+    return next(new ErrorRes(500, 'Email could not be sent'))
+  }
+})
+
+// @desc      Reset password
+// @route     PUT /api/v1/auth/resetpassword/:token
+// @access    Public
+exports.resetPassword = asyncUtil(async (req, res, next) => {
+  // find user by hashed token
+  const resetPasswordToken = crypto.createHash('sha256').update(req.params.token).digest('hex')
+  const user = await User.findOne({
+    where: {
+      resetPasswordToken,
+      resetPasswordExpire: { [Op.gt]: Date.now() }
+    }
+  })
+  if (!user) {
+    return next(new ErrorRes(401, 'Invalid token'))
+  }
+
+  // reset password and clear resetPasswordToken/Expire fields
+  user.password = req.body.password
+  user.resetPasswordToken = null
+  user.resetPasswordExpire = null
+  await user.save()
+
+  responseWithToken(res, user)
+})
+
+// login successfully, send response back with token
+function responseWithToken (res, user) {
+  const token = user.getJwtToken()
+
   return res.status(200).json({
     status: 'success',
-    user
+    token
   })
-})
+}
