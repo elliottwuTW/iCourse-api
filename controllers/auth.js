@@ -6,6 +6,20 @@ const asyncUtil = require('../middleware/asyncUtil')
 const ErrorRes = require('../utils/ErrorRes')
 const sendEmail = require('../utils/sendEmail')
 
+// @desc      User register
+// @route     POST /api/v1/auth/register
+// @access    Public
+exports.register = asyncUtil(async (req, res, next) => {
+  let user
+  user = await User.findOne({ where: { email: req.body.email } })
+  if (user) {
+    return next(new ErrorRes(400, 'Email is in use'))
+  }
+
+  user = await User.create(req.body)
+  responseWithToken(res, user)
+})
+
 // @desc      User login
 // @route     POST /api/v1/auth/login
 // @access    Public
@@ -21,6 +35,20 @@ exports.login = asyncUtil(async (req, res, next) => {
   }
 
   responseWithToken(res, user)
+})
+
+// @desc      Get current user
+// @route     GET /api/v1/auth/me
+// @access    Private
+exports.getMe = asyncUtil(async (req, res, next) => {
+  const user = await User.findByPk(req.user.id, {
+    attributes: ['id', 'name', 'email']
+  })
+
+  return res.status(200).json({
+    status: 'success',
+    data: user
+  })
 })
 
 // @desc      Forgot password

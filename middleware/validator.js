@@ -71,17 +71,6 @@ exports.checkUserName = [
     .optional()
     .isLength({ min: 3, max: 50 }).withMessage('Name length should be between 3 and 50 characters')
 ]
-exports.checkUserEmailInUse = [
-  body('email').trim()
-    .optional()
-    .custom(async (value, { req }) => {
-      const user = await User.findOne({ where: { email: value } })
-      if (user) {
-        throw new ErrorRes(400, 'Email is in use')
-      }
-      return true
-    })
-]
 exports.checkUserRole = [
   body('role').trim()
     .optional()
