@@ -3,6 +3,7 @@ const {
   Model
 } = require('sequelize')
 const bcrypt = require('bcryptjs')
+const crypto = require('crypto')
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -37,6 +38,12 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       type: DataTypes.STRING
     },
+    resetPasswordToken: {
+      type: DataTypes.STRING
+    },
+    resetPasswordExpire: {
+      type: DataTypes.DATE
+    },
     createdAt: {
       allowNull: false,
       type: DataTypes.DATE
@@ -64,6 +71,18 @@ module.exports = (sequelize, DataTypes) => {
   // compare the password
   User.prototype.matchPassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password)
+  }
+
+  // get reset token
+  User.prototype.getResetPasswordToken = async function () {
+    const resetToken = crypto.randomBytes(20).toString('hex')
+
+    // hash the token and store
+    this.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex')
+    // expires after 10 mins
+    this.resetPasswordExpire = Date.now() + 10 * 60 * 1000
+
+    return resetToken
   }
 
   return User
