@@ -1,4 +1,4 @@
-const { Group } = require('../models')
+const { User, Group, Course } = require('../models')
 
 const asyncUtil = require('../middleware/asyncUtil')
 
@@ -27,7 +27,12 @@ exports.getGroupsInRadius = asyncUtil(async (req, res, next) => {
 // @route     GET /api/v1/groups/:id
 // @access    Public
 exports.getGroup = asyncUtil(async (req, res, next) => {
-  const group = await Group.findByPk(req.params.id)
+  const group = await Group.findByPk(req.params.id, {
+    include: [
+      { model: User, attributes: ['id', 'name', 'email'] },
+      { model: Course, attributes: ['id', 'name', 'description', 'hours', 'tuition'] }
+    ]
+  })
 
   return res.status(200).json({
     status: 'success',
