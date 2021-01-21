@@ -12,13 +12,18 @@ const { protect, permit } = require('../../middleware/auth')
 const { ifExist, courseInfoExist, checkCourseName, checkCourseDescr, checkCourseHours, checkCourseTuition, checkValidation } = require('../../middleware/validator')
 const query = require('../../middleware/query')
 
+// other routes
+const reviewRouter = require('./reviews')
+// re-route
+router.use('/:id/reviews', reviewRouter)
+
 // route
 router.get('/', ifExist(Group), query(Course, [{ model: Group, attributes: ['id', 'name', 'description'] }], 'byGroup'), getCourses)
 
 router.get('/:id', ifExist(Course), getCourse)
 
 router.post('/', protect, permit('publisher', 'admin'),
-  courseInfoExist, checkCourseName, checkCourseDescr, checkCourseHours, checkCourseTuition, checkValidation,
+  ifExist(Group), courseInfoExist, checkCourseName, checkCourseDescr, checkCourseHours, checkCourseTuition, checkValidation,
   createCourse)
 
 router.put('/:id', protect, permit('publisher', 'admin'),
