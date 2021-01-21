@@ -1,16 +1,54 @@
 const { Group, Course } = require('../models')
 
 const asyncUtil = require('../middleware/asyncUtil')
+const getPagination = require('../utils/getPagination')
 
 const ErrorRes = require('../utils/ErrorRes')
 
+// @desc      Get courses / Get courses belonging to a group
+// @route     GET /api/v1/courses
+// @route     GET /api/v1/groups/:groupId/courses
+// @access    Public
+exports.getCourses = asyncUtil(async (req, res, next) => {
+  if (!req.params.groupId) {
+    // get all courses
+    return res.status(200).json({
+      status: 'success',
+      data: res.queryResult
+    })
+  } else {
+    // get courses belonging to a group
+    const groupId = req.params.groupId
+    const group = await Group.findByPk(groupId)
+    if (!group) {
+      return next(new ErrorRes(404, `Group with id ${groupId} does not exist`))
+    }
+
+    const query = res.query
+    const { count, rows } = await Course.findAndCountAll({
+      ...query.option,
+      where: {
+        ...query.option.where,
+        GroupId: groupId
+      }
+    })
+    return res.status(200).json({
+      status: 'success',
+      pagination: getPagination(query.page, query.limit, count),
+      count,
+      data: rows
+    })
+  }
+})
+
 // @desc      Create a new course
-// @route     POST /api/v1/groups/:id/courses
+// @route     POST /api/v1/groups/:groupId/courses
 // @access    Protect
 exports.createCourse = asyncUtil(async (req, res, next) => {
-  const group = await Group.findByPk(req.params.id)
+  const groupId = req.params.groupId
+  const group = await Group.findByPk(groupId)
   if (!group) {
-    return next(new ErrorRes(404, `Group with id ${req.params.id} does not exist`))
+    return next(new ErrorRes(404, `Group with id ${groupId} does not exist`))
   }
   if (req.user.id !== group.UserId && req.user.role !== 'admin') {
     return next(new ErrorRes(403, 'Not authorized to create this course'))

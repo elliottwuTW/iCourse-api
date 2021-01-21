@@ -17,14 +17,12 @@ const query = require('../../middleware/query')
 // other routes
 const courseRouter = require('./courses')
 // re-route
-router.use('/:id/courses', courseRouter)
+router.use('/:groupId/courses', courseRouter)
 
 // routes
-router.get('/',
-  query(Group, [{ model: Course, attributes: ['id', 'name', 'description'] }]),
-  getGroups)
+router.get('/', query(Group), getGroups)
 router.get('/radius/:lat/:long/:radius',
-  query(Group, [{ model: Course, attributes: ['id', 'name', 'description'] }], 'inRadius'),
+  query(Group, [], 'inRadius'),
   getGroupsInRadius)
 router.get('/:id', ifExist(Group), getGroup)
 

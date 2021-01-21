@@ -1,8 +1,12 @@
-const { User, Group, Course } = require('../models')
+const { User, Group, Course, sequelize } = require('../models')
+const Op = require('sequelize').Op
 
 const asyncUtil = require('../middleware/asyncUtil')
 
+const generateGeoPoint = require('../utils/generateGeoPoint')
 const uploadImage = require('../utils/uploadImage')
+const getPagination = require('../utils/getPagination')
+
 const ErrorRes = require('../utils/ErrorRes')
 
 // @desc      Get all groups
@@ -18,9 +22,29 @@ exports.getGroups = asyncUtil(async (req, res, next) => {
 // @route     GET /api/v1/groups/radius/:lat/:long/:radius
 // @access    Public
 exports.getGroupsInRadius = asyncUtil(async (req, res, next) => {
-  const result = res.queryResult
+  const query = res.query
 
-  return res.status(200).json(result)
+  // add geometry constraint
+  const distance = Number(req.params.radius) * 1000
+  const currentLocation = generateGeoPoint(req.params.lat, req.params.long)
+  const option = {
+    ...query.option,
+    where: {
+      [Op.and]: [
+        query.option.where,
+        sequelize.where(sequelize.fn('ST_Distance_Sphere', sequelize.col('location'), currentLocation), '<=', distance)
+      ]
+    }
+  }
+
+  const { count, rows } = await Group.findAndCountAll(option)
+
+  return res.status(200).json({
+    status: 'success',
+    pagination: getPagination(query.page, query.limit, count),
+    count,
+    data: rows
+  })
 })
 
 // @desc      Get single group

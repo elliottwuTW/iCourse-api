@@ -5,8 +5,8 @@
  */
 const asyncUtil = require('./asyncUtil')
 const Op = require('sequelize').Op
-const { sequelize } = require('../models')
-const generateGeoPoint = require('../utils/generateGeoPoint')
+const getPagination = require('../utils/getPagination')
+
 const query = (model, include = [], ...flag) => asyncUtil(async (req, res, next) => {
   let queryOption = {}
 
@@ -89,23 +89,15 @@ const query = (model, include = [], ...flag) => asyncUtil(async (req, res, next)
   const offset = (page - 1) * limit
   queryOption = { ...queryOption, offset, limit }
 
-  // ONLY FOR GROUP : getGroupsInRadius
-  if (model.name === 'Group' && flag.includes('inRadius')) {
-    const distance = Number(req.params.radius) * 1000
-    const currentLocation = generateGeoPoint(req.params.lat, req.params.long)
-    // add geometry constraint
-    queryOption = {
-      ...queryOption,
-      where: {
-        [Op.and]: [
-          where,
-          sequelize.where(sequelize.fn('ST_Distance_Sphere', sequelize.col('location'), currentLocation), '<=', distance)
-        ]
-      }
-    }
+  // handle the case of different query needs from the same route
+  // like: api/v1/courses & api/v1/groups/:groupId/courses
+  if (Object.keys(req.params).length === 0) {
+    // reset passed conditions
+    include = []
+    flag = []
   }
 
-  // execute the finder
+  // conclude the option for finder
   const option = {
     // get the result of "count" right
     distinct: true,
@@ -114,21 +106,23 @@ const query = (model, include = [], ...flag) => asyncUtil(async (req, res, next)
     nest: (include.length !== 0),
     ...queryOption
   }
-  const { count, rows } = await model.findAndCountAll(option)
 
-  // page info
-  const pagination = {}
-  const totalPages = Math.ceil(count / limit)
-  pagination.prev = (page - 1) >= 1 ? (page - 1) : null
-  pagination.next = (page + 1) <= totalPages ? (page + 1) : null
-  pagination.pages = totalPages
+  // Execute the finder or pass the query option out
+  if (flag.length !== 0) {
+    // option for further query
+    // page info for pagination
+    res.query = { option, page, limit }
+  } else {
+    // execute the finder
+    const { count, rows } = await model.findAndCountAll(option)
 
-  // put into res.queryResult
-  res.queryResult = {
-    status: 'success',
-    pagination,
-    count,
-    data: rows
+    // put into res.queryResult
+    res.queryResult = {
+      status: 'success',
+      pagination: getPagination(page, limit, count),
+      count,
+      data: rows
+    }
   }
 
   next()
