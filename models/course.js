@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate (models) {
       // define association here
+      Course.belongsTo(models.Group)
       Course.hasMany(models.Review)
       Course.belongsToMany(models.User, {
         through: models.Enrollment,

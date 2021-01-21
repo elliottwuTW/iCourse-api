@@ -14,6 +14,11 @@ const { protect, permit } = require('../../middleware/auth')
 const { ifExist, groupInfoExist, checkValidation, checkEmail, checkGroupName, checkGroupDescr, checkGroupWebsite, checkGroupPhone } = require('../../middleware/validator')
 const query = require('../../middleware/query')
 
+// other routes
+const courseRouter = require('./courses')
+// re-route
+router.use('/:id/courses', courseRouter)
+
 // routes
 router.get('/',
   query(Group, [{ model: Course, attributes: ['id', 'name', 'description'] }]),

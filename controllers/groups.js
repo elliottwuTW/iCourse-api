@@ -47,7 +47,7 @@ exports.createGroup = asyncUtil(async (req, res, next) => {
   // Only one group founded by one publisher account
   const publishedGroup = await Group.findOne({ where: { UserId: req.user.id } })
   if (publishedGroup && req.user.role !== 'admin') {
-    return next(new ErrorRes(400, `User with id ${req.user.id} has already published a group '${publishedGroup.name}'`))
+    return next(new ErrorRes(403, `User with id ${req.user.id} has already published a group '${publishedGroup.name}'`))
   }
 
   // upload file or not
@@ -72,7 +72,7 @@ exports.createGroup = asyncUtil(async (req, res, next) => {
 exports.updateGroup = asyncUtil(async (req, res, next) => {
   const group = await Group.findByPk(req.params.id)
   if (req.user.id !== group.UserId && req.user.role !== 'admin') {
-    return next(new ErrorRes(401, 'Not authorized to update this group'))
+    return next(new ErrorRes(403, 'Not authorized to update this group'))
   }
 
   // upload file or not
@@ -95,7 +95,7 @@ exports.updateGroup = asyncUtil(async (req, res, next) => {
 exports.deleteGroup = asyncUtil(async (req, res, next) => {
   const group = await Group.findByPk(req.params.id)
   if (req.user.id !== group.UserId && req.user.role !== 'admin') {
-    return next(new ErrorRes(401, 'Not authorized to delete this group'))
+    return next(new ErrorRes(403, 'Not authorized to delete this group'))
   }
 
   // delete the instance
