@@ -16,9 +16,13 @@ exports.checkValidation = (req, res, next) => {
 
 // check if the resource exists
 exports.ifExist = model => async (req, res, next) => {
-  const resource = await model.findByPk(req.params.id)
+  if (!req.params.id) {
+    return next()
+  }
+  const id = req.params.id
+  const resource = await model.findByPk(id)
   if (!resource) {
-    return next(new ErrorRes(404, `Resource with id ${req.params.id} does not exist`))
+    return next(new ErrorRes(404, `${model.name} with id ${id} does not exist`))
   }
   next()
 }

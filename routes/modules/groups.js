@@ -17,7 +17,7 @@ const query = require('../../middleware/query')
 // other routes
 const courseRouter = require('./courses')
 // re-route
-router.use('/:groupId/courses', courseRouter)
+router.use('/:id/courses', courseRouter)
 
 // routes
 router.get('/', query(Group), getGroups)

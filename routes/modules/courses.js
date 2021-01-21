@@ -13,7 +13,7 @@ const { ifExist, courseInfoExist, checkCourseName, checkCourseDescr, checkCourse
 const query = require('../../middleware/query')
 
 // route
-router.get('/', query(Course, [{ model: Group, attributes: ['id', 'name', 'description'] }], 'byGroup'), getCourses)
+router.get('/', ifExist(Group), query(Course, [{ model: Group, attributes: ['id', 'name', 'description'] }], 'byGroup'), getCourses)
 
 router.post('/', protect, permit('publisher', 'admin'),
   courseInfoExist, checkCourseName, checkCourseDescr, checkCourseHours, checkCourseTuition, checkValidation,
