@@ -1,4 +1,4 @@
-const { Group, Course } = require('../models')
+const { Group, Course, Review } = require('../models')
 
 const asyncUtil = require('../middleware/asyncUtil')
 const getPagination = require('../utils/getPagination')
@@ -12,10 +12,7 @@ const ErrorRes = require('../utils/ErrorRes')
 exports.getCourses = asyncUtil(async (req, res, next) => {
   if (!req.params.id) {
     // get all courses
-    return res.status(200).json({
-      status: 'success',
-      data: res.queryResult
-    })
+    return res.status(200).json(res.queryResult)
   } else {
     // get courses belonging to a group
     const query = res.query
@@ -35,6 +32,23 @@ exports.getCourses = asyncUtil(async (req, res, next) => {
   }
 })
 
+// @desc      Get single course
+// @route     GET /api/v1/courses/:id
+// @access    Public
+exports.getCourse = asyncUtil(async (req, res, next) => {
+  const course = await Course.findByPk(req.params.id, {
+    include: [
+      { model: Group, attributes: ['id', 'name', 'description'] },
+      { model: Review, attributes: ['id', 'title', 'text', 'rating'] }
+    ]
+  })
+
+  return res.status(200).json({
+    status: 'success',
+    data: course
+  })
+})
+
 // @desc      Create a new course
 // @route     POST /api/v1/groups/:id/courses
 // @access    Protect
@@ -48,6 +62,25 @@ exports.createCourse = asyncUtil(async (req, res, next) => {
   const course = await Course.create(req.body)
 
   return res.status(201).json({
+    status: 'success',
+    data: course
+  })
+})
+
+// @desc      Update a course
+// @route     PUT /api/v1/courses/:id
+// @access    Protect
+exports.updateCourse = asyncUtil(async (req, res, next) => {
+  const course = await Course.findByPk(req.params.id, {
+    include: { model: Group, attributes: ['UserId'] }
+  })
+  if (req.user.id !== course.Group.UserId && req.user.role !== 'admin') {
+    return next(new ErrorRes(403, 'Not authorized to update this course'))
+  }
+
+  await course.update(req.body)
+
+  return res.status(200).json({
     status: 'success',
     data: course
   })
