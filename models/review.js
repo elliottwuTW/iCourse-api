@@ -55,47 +55,47 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'Review'
   })
 
+  // get average rating
+  async function getAvgRating (model, column, condition) {
+    const score = await model.findAll({
+      attributes: [
+        [sequelize.fn('avg', sequelize.col(column)), 'avg_rating']
+      ],
+      where: condition,
+      raw: true
+    })
+    // precision to 2 decimal places
+    return Math.round(score[0].avg_rating * 100) / 100
+  }
+
   // update the averageRating of Group
   Review.prototype.updateAverageRating = async function (courseId) {
-    // get the course average rating
-    const score = await Review.findAll({
-      attributes: [
-        [sequelize.fn('avg', sequelize.col('rating')), 'avg_rating']
-      ],
-      where: { CourseId: courseId },
-      raw: true
-    })
-    const courseAvgRating = score[0].avg_rating
+    try {
+      const Course = sequelize.models.Course
+      const Group = sequelize.models.Group
 
-    // update to course
-    const Course = sequelize.models.Course
-    const course = await Course.findByPk(courseId)
-    await course.update({ averageRating: courseAvgRating })
+      // update course averageRating
+      const courseAvgRating = await getAvgRating(Review, 'rating', { CourseId: courseId })
+      const course = await Course.findByPk(courseId)
+      await course.update({ averageRating: courseAvgRating })
 
-    // get the group average rating
-    const groupScore = await Course.findAll({
-      attributes: [
-        [sequelize.fn('avg', sequelize.col('averageRating')), 'avg_rating']
-      ],
-      where: {
+      // update group averageRating
+      const groupAvgRating = await getAvgRating(Course, 'averageRating', {
         GroupId: course.GroupId,
         averageRating: { [Op.ne]: null }
-      },
-      raw: true
-    })
-    const groupAvgRating = groupScore[0].avg_rating
-
-    // update to group
-    const Group = sequelize.models.Group
-    await Group.update({ averageRating: groupAvgRating }, { where: { id: course.GroupId } })
+      })
+      await Group.update({ averageRating: groupAvgRating }, { where: { id: course.GroupId } })
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   // Review hooks
-  Review.afterSave(review => {
-    review.updateAverageRating(review.CourseId)
+  Review.afterSave(async (review) => {
+    await review.updateAverageRating(review.CourseId)
   })
-  Review.beforeDestroy(review => {
-    review.updateAverageRating(review.CourseId)
+  Review.beforeDestroy(async (review) => {
+    await review.updateAverageRating(review.CourseId)
   })
 
   return Review
