@@ -102,6 +102,9 @@ const query = (model, include = [], ...flag) => asyncUtil(async (req, res, next)
     // get the result of "count" right
     distinct: true,
     include,
+    attributes: {
+      exclude: (model.name === 'User') ? ['password'] : []
+    },
     // transform into nested object
     nest: (include.length !== 0),
     ...queryOption
