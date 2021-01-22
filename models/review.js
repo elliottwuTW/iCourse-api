@@ -1,6 +1,7 @@
 'use strict'
 const {
-  Model
+  Model,
+  Op
 } = require('sequelize')
 module.exports = (sequelize, DataTypes) => {
   class Review extends Model {
@@ -53,5 +54,49 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Review'
   })
+
+  // update the averageRating of Group
+  Review.prototype.updateAverageRating = async function (courseId) {
+    // get the course average rating
+    const score = await Review.findAll({
+      attributes: [
+        [sequelize.fn('avg', sequelize.col('rating')), 'avg_rating']
+      ],
+      where: { CourseId: courseId },
+      raw: true
+    })
+    const courseAvgRating = score[0].avg_rating
+
+    // update to course
+    const Course = sequelize.models.Course
+    const course = await Course.findByPk(courseId)
+    await course.update({ averageRating: courseAvgRating })
+
+    // get the group average rating
+    const groupScore = await Course.findAll({
+      attributes: [
+        [sequelize.fn('avg', sequelize.col('averageRating')), 'avg_rating']
+      ],
+      where: {
+        GroupId: course.GroupId,
+        averageRating: { [Op.ne]: null }
+      },
+      raw: true
+    })
+    const groupAvgRating = groupScore[0].avg_rating
+
+    // update to group
+    const Group = sequelize.models.Group
+    await Group.update({ averageRating: groupAvgRating }, { where: { id: course.GroupId } })
+  }
+
+  // Review hooks
+  Review.afterSave(review => {
+    review.updateAverageRating(review.CourseId)
+  })
+  Review.beforeDestroy(review => {
+    review.updateAverageRating(review.CourseId)
+  })
+
   return Review
 }

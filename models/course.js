@@ -37,6 +37,9 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       type: DataTypes.INTEGER
     },
+    averageRating: {
+      type: DataTypes.FLOAT
+    },
     GroupId: {
       allowNull: false,
       type: DataTypes.INTEGER,
@@ -58,8 +61,9 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'Course'
   })
 
-  // get the average cost of Group
-  Course.prototype.getAverageCost = async function (groupId) {
+  // update the averageCost of Group
+  Course.prototype.updateAverageCost = async function (groupId) {
+    // get the average cost
     const tuition = await Course.findAll({
       attributes: [
         [sequelize.fn('avg', sequelize.col('tuition')), 'avg_cost']
@@ -67,17 +71,18 @@ module.exports = (sequelize, DataTypes) => {
       where: { GroupId: groupId },
       raw: true
     })
-    // update to the Group with groupId
     const averageCost = Math.round(tuition[0].avg_cost)
+
+    // update
     await sequelize.models.Group.update({ averageCost }, { where: { id: groupId } })
   }
 
-  // update the averageCost of Group
+  // Course hooks
   Course.afterSave(course => {
-    course.getAverageCost(course.GroupId)
+    course.updateAverageCost(course.GroupId)
   })
   Course.beforeDestroy(course => {
-    course.getAverageCost(course.GroupId)
+    course.updateAverageCost(course.GroupId)
   })
 
   return Course
