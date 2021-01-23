@@ -10,20 +10,21 @@ const { ifExist, userInfoExist, passwordExist, checkEmail, checkUserName, checkU
 const query = require('../../middleware/query')
 
 // request handler
-const { getUsers, getUser, createUser, updateUser, deleteUser } = require('../../controllers/users')
+const { getUsers, getUser, getFollowGroups, createUser, updateUser, deleteUser } = require('../../controllers/users')
 
-// all routes need protected and must be accessed by admin
-router.use(protect, permit('admin'))
+// all routes need protected
+router.use(protect)
 
 // route
-router.get('/', query(User), getUsers)
-router.get('/:id', ifExist(User), getUser)
-router.post('/',
+router.get('/:id/follows', ifExist(User), getFollowGroups)
+router.get('/', permit('admin'), query(User), getUsers)
+router.get('/:id', permit('admin'), ifExist(User), getUser)
+router.post('/', permit('admin'),
   userInfoExist, passwordExist, checkEmail, checkUserName, checkUserPassword, checkUserRole, checkValidation,
   createUser)
-router.put('/:id',
+router.put('/:id', permit('admin'),
   ifExist(User), checkEmail, checkUserName, checkUserPassword, checkUserRole, checkValidation,
   updateUser)
-router.delete('/:id', ifExist(User), deleteUser)
+router.delete('/:id', permit('admin'), ifExist(User), deleteUser)
 
 module.exports = router

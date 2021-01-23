@@ -55,7 +55,12 @@ exports.getGroup = asyncUtil(async (req, res, next) => {
     include: [
       { model: User, attributes: ['id', 'name', 'email'] },
       { model: Course, attributes: ['id', 'name', 'description', 'hours', 'tuition'] }
-    ]
+    ],
+    attributes: {
+      include: [
+        [sequelize.literal(`(SELECT COUNT(DISTINCT UserId) FROM Follows WHERE GroupId = ${req.params.id})`), 'followerCount']
+      ]
+    }
   })
 
   return res.status(200).json({
