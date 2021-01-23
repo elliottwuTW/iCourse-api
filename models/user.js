@@ -16,6 +16,11 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       User.hasMany(models.Group)
       User.hasMany(models.Review)
+      User.belongsToMany(models.Group, {
+        through: models.Follow,
+        foreignKey: 'UserId',
+        as: 'followGroups'
+      })
       User.belongsToMany(models.Course, {
         through: models.Enrollment,
         foreignKey: 'UserId',

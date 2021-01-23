@@ -2,6 +2,7 @@
  * Middleware to do an advanced query to the model and find the result
  * @param {*} model : model to do findAndCountAll query
  * @param {*} include : other model to be included
+ * @param {*} flag : to indicate to pass query option out for further execution
  */
 const asyncUtil = require('./asyncUtil')
 const Op = require('sequelize').Op

@@ -15,6 +15,11 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Group.belongsTo(models.User)
       Group.hasMany(models.Course)
+      Group.belongsToMany(models.User, {
+        through: models.Follow,
+        foreignKey: 'GroupId',
+        as: 'followers'
+      })
     }
   }
   Group.init({
