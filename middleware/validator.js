@@ -1,5 +1,5 @@
-const { body, validationResult } = require('express-validator')
-const { User } = require('../models')
+const { body, param, validationResult } = require('express-validator')
+const { Group, Follow } = require('../models')
 
 const ErrorRes = require('../utils/ErrorRes')
 
@@ -145,4 +145,44 @@ exports.checkReviewRating = [
   body('rating').trim()
     .optional()
     .isInt({ min: 1, max: 10 }).withMessage('Please add a rating between 1 and 10')
+]
+exports.checkFollowSelf = [
+  param('id')
+    .custom(async (GroupId, { req }) => {
+      const group = await Group.findByPk(GroupId)
+      if (req.user.id === group.UserId) {
+        throw new ErrorRes(400, 'User is not allowed to follow owned group')
+      }
+      return true
+    })
+]
+exports.checkFollowDuplicate = [
+  param('id')
+    .custom(async (GroupId, { req }) => {
+      const group = await Follow.findOne({
+        where: {
+          UserId: req.user.id,
+          GroupId
+        }
+      })
+      if (group) {
+        throw new ErrorRes(400, 'Duplicate follow to the same group')
+      }
+      return true
+    })
+]
+exports.checkFollowExist = [
+  param('id')
+    .custom(async (GroupId, { req }) => {
+      const group = await Follow.findOne({
+        where: {
+          UserId: req.user.id,
+          GroupId
+        }
+      })
+      if (!group) {
+        throw new ErrorRes(404, 'The follow record is not found')
+      }
+      return true
+    })
 ]
