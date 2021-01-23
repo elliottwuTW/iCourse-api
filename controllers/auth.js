@@ -71,13 +71,13 @@ exports.forgotPassword = asyncUtil(async (req, res, next) => {
     await sendEmail({
       email: user.email,
       subject: 'Reset password instructions for iCourse account',
-      message: `
-      \n
-      Someone has requested a link to change your password.
-      \n
-      You can do this by sending a PUT request to: \n${resetURL}
-      \n
-      The URL expires after 10 minutes.`
+      html: `
+      <b> Someone has requested a link to change your password. <b>
+      <br><br>
+      You can do this by sending a PUT request to: ${resetURL}
+      <br><br>
+      The URL expires after 10 minutes.
+      `
     })
 
     return res.status(200).json({

@@ -2,6 +2,7 @@
 const {
   Model
 } = require('sequelize')
+const sendEmail = require('../utils/sendEmail')
 module.exports = (sequelize, DataTypes) => {
   class Course extends Model {
     /**
@@ -81,12 +82,33 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
+  // send email to notify all followers
+  Course.prototype.notifyAllFollowers = async function () {
+    const course = this
+    const group = await sequelize.models.Group.findByPk(this.GroupId, {
+      include: { model: sequelize.models.User, as: 'followers', attributes: ['email'] }
+    })
+    await Promise.all(
+      group.followers.map(follower => sendEmail({
+        email: follower.email,
+        subject: `[iCourse] ${group.name} has published a new course`,
+        html: `
+          <h3>New Course ${course.name} Published!</h3>
+          Check it out in i-Course. Have a GOOD learning journey!
+        `
+      }))
+    )
+  }
+
   // Course hooks
   Course.afterSave(async (course) => {
     await course.updateAverageCost()
   })
   Course.beforeDestroy(async (course) => {
     await course.updateAverageCost()
+  })
+  Course.afterCreate(async (course) => {
+    await course.notifyAllFollowers()
   })
 
   return Course
