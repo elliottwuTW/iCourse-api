@@ -69,14 +69,14 @@ module.exports = (sequelize, DataTypes) => {
   }
 
   // update the averageRating of Group
-  Review.prototype.updateAverageRating = async function (courseId) {
+  Review.prototype.updateAverageRating = async function () {
     try {
       const Course = sequelize.models.Course
       const Group = sequelize.models.Group
 
       // update course averageRating
-      const courseAvgRating = await getAvgRating(Review, 'rating', { CourseId: courseId })
-      const course = await Course.findByPk(courseId)
+      const courseAvgRating = await getAvgRating(Review, 'rating', { CourseId: this.CourseId })
+      const course = await Course.findByPk(this.CourseId)
       await course.update({ averageRating: courseAvgRating })
 
       // update group averageRating
@@ -92,10 +92,10 @@ module.exports = (sequelize, DataTypes) => {
 
   // Review hooks
   Review.afterSave(async (review) => {
-    await review.updateAverageRating(review.CourseId)
+    await review.updateAverageRating()
   })
   Review.beforeDestroy(async (review) => {
-    await review.updateAverageRating(review.CourseId)
+    await review.updateAverageRating()
   })
 
   return Review

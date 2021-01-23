@@ -62,20 +62,20 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   // update the averageCost of Group
-  Course.prototype.updateAverageCost = async function (groupId) {
+  Course.prototype.updateAverageCost = async function () {
     try {
       // get the average cost
       const tuition = await Course.findAll({
         attributes: [
           [sequelize.fn('avg', sequelize.col('tuition')), 'avg_cost']
         ],
-        where: { GroupId: groupId },
+        where: { GroupId: this.GroupId },
         raw: true
       })
       const averageCost = Math.round(tuition[0].avg_cost)
 
       // update
-      await sequelize.models.Group.update({ averageCost }, { where: { id: groupId } })
+      await sequelize.models.Group.update({ averageCost }, { where: { id: this.GroupId } })
     } catch (err) {
       console.error(err)
     }
@@ -83,10 +83,10 @@ module.exports = (sequelize, DataTypes) => {
 
   // Course hooks
   Course.afterSave(async (course) => {
-    await course.updateAverageCost(course.GroupId)
+    await course.updateAverageCost()
   })
   Course.beforeDestroy(async (course) => {
-    await course.updateAverageCost(course.GroupId)
+    await course.updateAverageCost()
   })
 
   return Course
