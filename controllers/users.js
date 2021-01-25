@@ -33,13 +33,16 @@ exports.getFollowGroups = asyncUtil(async (req, res, next) => {
     include: {
       model: Group,
       as: 'followGroups',
-      attributes: ['id', 'name', 'description', 'averageCost', 'averageRating']
+      attributes: ['id', 'name', 'description', 'averageCost', 'averageRating', 'photo']
     }
   })
 
   return res.status(200).json({
     status: 'success',
-    data: user.followGroups
+    data: {
+      user: user.name,
+      groups: user.followGroups
+    }
   })
 })
 

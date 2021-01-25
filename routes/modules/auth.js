@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 // request handlers
-const { register, login, getMe, forgotPassword, resetPassword } = require('../../controllers/auth')
+const { register, login, getMe, updateProfile, forgotPassword, resetPassword } = require('../../controllers/auth')
 
 // middleware
 const { userInfoExist, loginInfoExist, passwordExist, checkEmail, checkUserPassword, checkValidation, checkUserName, checkUserRole } = require('../../middleware/validator')
@@ -19,6 +19,9 @@ router.post('/login',
 router.post('/forgotpassword',
   checkEmail, checkValidation,
   forgotPassword)
+router.put('/updateprofile', protect,
+  checkUserName, checkEmail, checkUserPassword, checkValidation,
+  updateProfile)
 router.put('/resetpassword/:token',
   passwordExist, checkUserPassword, checkValidation,
   resetPassword)

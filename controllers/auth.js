@@ -42,8 +42,23 @@ exports.login = asyncUtil(async (req, res, next) => {
 // @access    Private
 exports.getMe = asyncUtil(async (req, res, next) => {
   const user = await User.findByPk(req.user.id, {
-    attributes: ['id', 'name', 'email']
+    attributes: ['id', 'name', 'email', 'role']
   })
+
+  return res.status(200).json({
+    status: 'success',
+    data: user
+  })
+})
+
+// @desc      Update user profile
+// @route     PUT /api/v1/auth/updateprofile
+// @access    Private
+exports.updateProfile = asyncUtil(async (req, res, next) => {
+  const user = await User.findByPk(req.user.id, {
+    attributes: ['id', 'name', 'email', 'role']
+  })
+  await user.update(req.body)
 
   return res.status(200).json({
     status: 'success',

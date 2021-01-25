@@ -2,6 +2,7 @@ const express = require('express')
 const dotenv = require('dotenv')
 const morgan = require('morgan')
 require('colors')
+const cors = require('cors')
 
 const routes = require('./routes/index')
 const errorHandler = require('./middleware/error')
@@ -15,6 +16,9 @@ const PORT = process.env.PORT
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'))
 }
+
+// Cors
+app.use(cors())
 
 // Parse data
 app.use(express.json())
@@ -31,6 +35,6 @@ const server = app.listen(PORT, () => {
 
 // Unhandled promise rejection
 process.on('unhandledRejection', (err, promise) => {
-  console.error(`Unhandled Rejection catched: ${err.message}`.red.bold)
+  console.error(`Unhandled Rejection caught: ${err.message}`.red.bold)
   server.close(() => process.exit(1))
 })
