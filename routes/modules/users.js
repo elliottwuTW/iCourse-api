@@ -17,8 +17,8 @@ router.use(protect)
 
 // route
 router.get('/:id/follows', ifExist(User), getFollowGroups)
+router.get('/:id', ifExist(User), getUser)
 router.get('/', permit('admin'), query(User), getUsers)
-router.get('/:id', permit('admin'), ifExist(User), getUser)
 router.post('/', permit('admin'),
   userInfoExist, passwordExist, checkEmail, checkUserName, checkUserPassword, checkUserRole, checkValidation,
   createUser)

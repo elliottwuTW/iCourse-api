@@ -84,7 +84,7 @@ const query = (model, include = [], ...flag) => asyncUtil(async (req, res, next)
 
   // pagination
   // eg. page=2&limit=2
-  const DEFAULT_PAGE_LIMIT = 2
+  const DEFAULT_PAGE_LIMIT = 6
   const limit = Number(req.query.limit) || DEFAULT_PAGE_LIMIT
   const page = Number(req.query.page) || 1
   const offset = (page - 1) * limit

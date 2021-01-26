@@ -1,6 +1,7 @@
 const { User, Group } = require('../models')
 
 const asyncUtil = require('../middleware/asyncUtil')
+const ErrorRes = require('../utils/ErrorRes')
 
 const exclude = ['password']
 
@@ -13,10 +14,17 @@ exports.getUsers = asyncUtil(async (req, res, next) => {
 
 // @desc      Get single user
 // @route     GET /api/v1/users/:id
-// @access    Protect - Only for admin
+// @access    Protect
 exports.getUser = asyncUtil(async (req, res, next) => {
+  // only accessible to user himself/herself
+  const isSelf = (String(req.user.id) === String(req.params.id))
+  if (!isSelf && req.user.role !== 'admin') {
+    return next(new ErrorRes(403, 'Not authorized to access this user'))
+  }
+
   const user = await User.findByPk(req.params.id, {
-    attributes: { exclude }
+    attributes: { exclude },
+    include: { model: Group, attributes: ['id', 'name', 'description', 'photo'] }
   })
 
   return res.status(200).json({
