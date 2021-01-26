@@ -1,4 +1,4 @@
-const { body, param, validationResult } = require('express-validator')
+const { body, validationResult } = require('express-validator')
 const { Group, Follow } = require('../models')
 
 const ErrorRes = require('../utils/ErrorRes')
@@ -31,35 +31,34 @@ exports.ifExist = model => async (req, res, next) => {
  * check if all needed fields exist
  */
 exports.loginInfoExist = [
-  body('email').exists().withMessage('Email is required'),
-  body('password').exists().withMessage('Password is required')
+  body('email').exists().notEmpty().withMessage('Email is required'),
+  body('password').exists().notEmpty().withMessage('Password is required')
 ]
 exports.userInfoExist = [
-  body('name').exists().withMessage('Name is required'),
-  body('email').exists().withMessage('Email is required'),
-  body('role').exists().withMessage('User role is required')
+  body('name').exists().notEmpty().withMessage('Name is required'),
+  body('email').exists().notEmpty().withMessage('Email is required'),
+  body('role').exists().notEmpty().withMessage('User role is required')
 ]
 exports.passwordExist = [
-  body('password').exists().withMessage('Password is required'),
-  body('passwordConfirm').exists().withMessage('Password-confirmation is required')
+  body('password').exists().notEmpty().withMessage('Password is required'),
+  body('passwordConfirm').exists().notEmpty().withMessage('Password-confirmation is required')
 ]
 exports.groupInfoExist = [
-  body('name').exists().withMessage('Name is required'),
-  body('description').exists().withMessage('Description is required'),
-  body('website').exists().withMessage('Website is required'),
-  body('phone').exists().withMessage('Phone is required'),
-  body('email').exists().withMessage('Email is required'),
-  body('address').exists().withMessage('Address is required')
+  body('name').exists().notEmpty().withMessage('Name is required'),
+  body('description').exists().notEmpty().withMessage('Description is required'),
+  body('phone').exists().notEmpty().withMessage('Phone is required'),
+  body('email').exists().notEmpty().withMessage('Email is required'),
+  body('address').exists().notEmpty().withMessage('Address is required')
 ]
 exports.courseInfoExist = [
-  body('name').exists().withMessage('Name is required'),
-  body('description').exists().withMessage('Description is required'),
-  body('hours').exists().withMessage('Course duration is required'),
-  body('tuition').exists().withMessage('Tuition is required')
+  body('name').exists().notEmpty().withMessage('Name is required'),
+  body('description').exists().notEmpty().withMessage('Description is required'),
+  body('hours').exists().notEmpty().withMessage('Course duration is required'),
+  body('tuition').exists().notEmpty().withMessage('Tuition is required')
 ]
 exports.reviewInfoExist = [
-  body('title').exists().withMessage('Title is required'),
-  body('rating').exists().withMessage('Rating is required')
+  body('title').exists().notEmpty().withMessage('Title is required'),
+  body('rating').exists().notEmpty().withMessage('Rating is required')
 ]
 
 /**
