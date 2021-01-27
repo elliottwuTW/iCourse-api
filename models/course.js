@@ -41,6 +41,9 @@ module.exports = (sequelize, DataTypes) => {
     averageRating: {
       type: DataTypes.FLOAT
     },
+    photo: {
+      type: DataTypes.STRING
+    },
     GroupId: {
       allowNull: false,
       type: DataTypes.INTEGER,

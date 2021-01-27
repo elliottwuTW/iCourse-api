@@ -2,6 +2,7 @@ const { Group, Course, Review } = require('../models')
 
 const asyncUtil = require('../middleware/asyncUtil')
 const getPagination = require('../utils/getPagination')
+const uploadImage = require('../utils/uploadImage')
 
 const ErrorRes = require('../utils/ErrorRes')
 
@@ -58,6 +59,13 @@ exports.createCourse = asyncUtil(async (req, res, next) => {
     return next(new ErrorRes(403, 'Not authorized to create this course'))
   }
 
+  // upload file or not
+  if (req.file) {
+    const imgURL = await uploadImage(req.file)
+    req.body.photo = imgURL.data.link
+  } else {
+    req.body.photo = null
+  }
   req.body.GroupId = group.id
   const course = await Course.create(req.body)
 
@@ -78,6 +86,11 @@ exports.updateCourse = asyncUtil(async (req, res, next) => {
     return next(new ErrorRes(403, 'Not authorized to update this course'))
   }
 
+  // upload file or not
+  if (req.file) {
+    const imgURL = await uploadImage(req.file)
+    req.body.photo = imgURL.data.link
+  }
   await course.update(req.body)
 
   return res.status(200).json({

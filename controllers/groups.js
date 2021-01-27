@@ -54,7 +54,7 @@ exports.getGroup = asyncUtil(async (req, res, next) => {
   const group = await Group.findByPk(req.params.id, {
     include: [
       { model: User, attributes: ['id', 'name', 'email'] },
-      { model: Course, attributes: ['id', 'name', 'description', 'hours', 'tuition'] }
+      { model: Course, attributes: ['id', 'name', 'description', 'hours', 'tuition', 'photo'] }
     ],
     attributes: {
       include: [
