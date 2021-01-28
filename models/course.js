@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate (models) {
       // define association here
       Course.belongsTo(models.Group)
-      Course.hasMany(models.Review)
+      Course.hasMany(models.Review, { onDelete: 'CASCADE', hooks: true })
       Course.belongsToMany(models.User, {
         through: models.Enrollment,
         foreignKey: 'CourseId',
@@ -107,7 +107,7 @@ module.exports = (sequelize, DataTypes) => {
   Course.afterSave(async (course) => {
     await course.updateAverageCost()
   })
-  Course.beforeDestroy(async (course) => {
+  Course.afterDestroy(async (course) => {
     await course.updateAverageCost()
   })
   Course.afterCreate(async (course) => {

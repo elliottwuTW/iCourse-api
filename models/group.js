@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate (models) {
       // define association here
       Group.belongsTo(models.User)
-      Group.hasMany(models.Course)
+      Group.hasMany(models.Course, { onDelete: 'CASCADE', hooks: true })
       Group.belongsToMany(models.User, {
         through: models.Follow,
         foreignKey: 'GroupId',
@@ -69,19 +69,24 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'Group'
   })
 
-  Group.beforeSave(async (group) => {
+  // update location of this group
+  Group.prototype.updateLocation = async function () {
     // ignore unless the address is modified
-    if (!group.changed('address')) {
+    if (!this.changed('address')) {
       return
     }
-    const geoLocation = await geocoder.geocode(group.address)
+    const geoLocation = await geocoder.geocode(this.address)
     // reassign the address
-    group.address = geoLocation[0].formattedAddress
+    this.address = geoLocation[0].formattedAddress
 
     // location
     const lat = geoLocation[0].latitude
     const long = geoLocation[0].longitude
-    group.location = generateGeoPoint(lat, long)
+    this.location = generateGeoPoint(lat, long)
+  }
+
+  Group.beforeSave(async (group) => {
+    await group.updateLocation()
   })
 
   return Group

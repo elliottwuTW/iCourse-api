@@ -94,7 +94,7 @@ module.exports = (sequelize, DataTypes) => {
   Review.afterSave(async (review) => {
     await review.updateAverageRating()
   })
-  Review.beforeDestroy(async (review) => {
+  Review.afterDestroy(async (review) => {
     await review.updateAverageRating()
   })
 
