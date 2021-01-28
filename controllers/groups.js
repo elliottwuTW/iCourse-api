@@ -1,4 +1,4 @@
-const { User, Group, Course, sequelize } = require('../models')
+const { User, Group, sequelize } = require('../models')
 const Op = require('sequelize').Op
 
 const asyncUtil = require('../middleware/asyncUtil')
@@ -53,8 +53,7 @@ exports.getGroupsInRadius = asyncUtil(async (req, res, next) => {
 exports.getGroup = asyncUtil(async (req, res, next) => {
   const group = await Group.findByPk(req.params.id, {
     include: [
-      { model: User, attributes: ['id', 'name', 'email'] },
-      { model: Course, attributes: ['id', 'name', 'description', 'hours', 'tuition', 'photo'] }
+      { model: User, attributes: ['id', 'name', 'email'] }
     ],
     attributes: {
       include: [

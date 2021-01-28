@@ -3,6 +3,7 @@ module.exports = (currentPage, limitPerPage, total) => {
   const totalPages = Math.ceil(total / limitPerPage)
 
   return ({
+    currentPage,
     prev: (currentPage - 1) >= 1 ? (currentPage - 1) : null,
     next: (currentPage + 1) <= totalPages ? (currentPage + 1) : null,
     pages: totalPages

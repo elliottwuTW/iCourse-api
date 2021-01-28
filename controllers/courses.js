@@ -1,4 +1,4 @@
-const { Group, Course, Review } = require('../models')
+const { Group, Course } = require('../models')
 
 const asyncUtil = require('../middleware/asyncUtil')
 const getPagination = require('../utils/getPagination')
@@ -39,8 +39,7 @@ exports.getCourses = asyncUtil(async (req, res, next) => {
 exports.getCourse = asyncUtil(async (req, res, next) => {
   const course = await Course.findByPk(req.params.id, {
     include: [
-      { model: Group, attributes: ['id', 'name', 'description'] },
-      { model: Review, attributes: ['id', 'title', 'text', 'rating'] }
+      { model: Group, attributes: ['id', 'name', 'description', 'UserId'] }
     ]
   })
 
