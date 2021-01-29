@@ -10,7 +10,6 @@ const getPagination = require('../utils/getPagination')
 
 const query = (model, include = [], ...flag) => asyncUtil(async (req, res, next) => {
   let queryOption = {}
-  console.log('flag: ', flag)
 
   const reqQuery = { ...req.query }
 
@@ -93,13 +92,11 @@ const query = (model, include = [], ...flag) => asyncUtil(async (req, res, next)
 
   // handle the case of different query needs from the same route
   // like: api/v1/courses & api/v1/groups/:groupId/courses
-  console.log('req.params: ', req.params)
   if (Object.keys(req.params).length === 0) {
     // reset passed conditions
     include = []
     flag = []
   }
-  console.log('flag: ', flag)
 
   // conclude the option for finder
   const option = {
@@ -115,12 +112,10 @@ const query = (model, include = [], ...flag) => asyncUtil(async (req, res, next)
   }
 
   // Execute the finder or pass the query option out
-  console.log('flag.length: ', flag.length)
   if (flag.length !== 0) {
     // option for further query
     // page info for pagination
     res.query = { option, page, limit }
-    console.log('in query.js, res.query: ', res.query)
   } else {
     // execute the finder
     const { count, rows } = await model.findAndCountAll(option)

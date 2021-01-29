@@ -15,7 +15,6 @@ exports.getReviews = asyncUtil(async (req, res, next) => {
     return res.status(200).json(res.queryResult)
   } else {
     // get reviews belonging to a course
-    console.log('ing getReviews, res.query: ', res.query)
     const query = res.query
     const { count, rows } = await Review.findAndCountAll({
       ...query.option,
