@@ -86,7 +86,7 @@ Backend API server for iCourse Node.js web application, a course directory websi
 - Calculate the average rating from all reviews of different courses for a group
 
 ### Document
-Check api details in [iCourse REST API](https://icourse-api.herokuapp.com/index.html)
+Check api details in [iCourse REST API](https://icourse-api.herokuapp.com/)
 
 ### Scheme
 ![](https://raw.githubusercontent.com/elliottwuTW/iCourse-api/master/public/scheme-structure.png)

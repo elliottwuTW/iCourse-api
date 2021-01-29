@@ -23,6 +23,9 @@ app.use(cors())
 // Parse data
 app.use(express.json())
 
+// Static data
+app.use(express.static('public'))
+
 // Route
 app.use('/api/v1', routes)
 
