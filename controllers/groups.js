@@ -32,7 +32,7 @@ exports.getGroupsInRadius = asyncUtil(async (req, res, next) => {
     where: {
       [Op.and]: [
         query.option.where,
-        sequelize.where(sequelize.fn('ST_Distance_Sphere', sequelize.col('location'), currentLocation), '<=', distance)
+        sequelize.where(sequelize.fn('Distance_Sphere', sequelize.col('location'), currentLocation), '<=', distance)
       ]
     }
   }
