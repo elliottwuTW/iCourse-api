@@ -3,84 +3,72 @@
     "name": "Group-1 course-1",
     "description": "Group-1 course-1 description...",
     "hours": 20,
-    "tuition": 10000,
-    "GroupId": 1
+    "tuition": 10000
   },
   {
     "name": "Group-1 course-2",
     "description": "Group-1 course-2 description...",
     "hours": 18,
-    "tuition": 9500,
-    "GroupId": 1
+    "tuition": 9500
   },
   {
     "name": "Group-1 course-3",
     "description": "Group-1 course-3 description...",
     "hours": 30,
-    "tuition": 13000,
-    "GroupId": 1
+    "tuition": 13000
   },
   {
     "name": "Group-1 course-4",
     "description": "Group-1 course-4 description...",
     "hours": 22,
-    "tuition": 10500,
-    "GroupId": 1
+    "tuition": 10500
   },
   {
     "name": "Group-1 course-5",
     "description": "Group-1 course-5 description...",
     "hours": 10,
-    "tuition": 5000,
-    "GroupId": 1
+    "tuition": 5000
   },
   {
     "name": "Group-1 course-6",
     "description": "Group-1 course-6 description...",
     "hours": 48,
-    "tuition": 23000,
-    "GroupId": 1
+    "tuition": 23000
   },
   {
     "name": "Group-2 course-1",
     "description": "Group-2 course-1 description...",
     "hours": 8,
-    "tuition": 6500,
-    "GroupId": 2
+    "tuition": 6500
   },
   {
     "name": "Group-2 course-2",
     "description": "Group-2 course-2 description...",
     "hours": 3,
-    "tuition": 3000,
-    "GroupId": 2
+    "tuition": 3000
   },
   {
     "name": "Group-2 course-3",
     "description": "Group-2 course-3 description...",
     "hours": 10,
-    "tuition": 10000,
-    "GroupId": 2
+    "tuition": 10000
   },
   {
     "name": "Group-3 course-1",
     "description": "Group-3 course-1 description...",
     "hours": 5,
-    "tuition": 6000,
-    "GroupId": 3
+    "tuition": 6000
   },
   {
     "name": "Group-3 course-2",
     "description": "Group-3 course-2 description...",
     "hours": 3,
-    "tuition": 3000,
-    "GroupId": 3
+    "tuition": 3000
   },
   {
     "name": "Group-3 course-3",
     "description": "Group-3 course-3 description...",
     "hours": 10,
-    "tuition": 9500,
-    "GroupId": 3
+    "tuition": 9500
   }
 ]
