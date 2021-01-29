@@ -13,6 +13,9 @@ module.exports = {
     const userIdPool = users.map(user => user.id)
     const courseIdPool = courses.map(course => course.id)
 
+    console.log('userIdPool: ', userIdPool)
+    console.log('courseIdPool: ', courseIdPool)
+
     const reviewData = Array.from({ length: 20 }).map((_, index) => ({
       title: `review title ${index + 1}`,
       text: `review text ${index + 1} ...`,
