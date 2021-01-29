@@ -21,7 +21,9 @@ const reviewRouter = require('./reviews')
 router.use('/:id/reviews', reviewRouter)
 
 // route
-router.get('/', ifExist(Group), query(Course, [{ model: Group, attributes: ['id', 'name', 'description'] }], 'byGroup'), getCourses)
+router.get('/', ifExist(Group), query(Course, {
+  include: [{ model: Group, attributes: ['id', 'name', 'description'] }]
+}, 'byGroup'), getCourses)
 
 router.get('/:id', ifExist(Course), getCourse)
 

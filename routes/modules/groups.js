@@ -4,7 +4,7 @@ const router = express.Router()
 const multer = require('multer')
 const upload = multer({ dest: 'temp/' })
 
-const { Group } = require('../../models')
+const { Group, sequelize } = require('../../models')
 
 // request handlers
 const { getGroups, getGroup, getGroupsInRadius, createGroup, updateGroup, deleteGroup } = require('../../controllers/groups')
@@ -14,15 +14,23 @@ const { protect, permit } = require('../../middleware/auth')
 const { ifExist, groupInfoExist, checkValidation, checkEmail, checkGroupName, checkGroupDescr, checkGroupWebsite, checkGroupPhone } = require('../../middleware/validator')
 const query = require('../../middleware/query')
 
+// more group information
+const groupAttributesInclude = [
+  [sequelize.literal('(SELECT COUNT(*) FROM Courses WHERE GroupId = Group.id)'), 'courseCount'],
+  [sequelize.literal(`
+  (SELECT COUNT(*) FROM Reviews 
+    WHERE CourseId IN (SELECT id FROM Courses WHERE GroupId = Group.id))`), 'reviewCount']
+]
+
 // other routes
 const courseRouter = require('./courses')
 // re-route
 router.use('/:id/courses', courseRouter)
 
 // routes
-router.get('/', query(Group), getGroups)
+router.get('/', query(Group, { attributesInclude: groupAttributesInclude }), getGroups)
 router.get('/radius/:lat/:long/:radius',
-  query(Group, [], 'inRadius'),
+  query(Group, { attributesInclude: groupAttributesInclude }, 'inRadius'),
   getGroupsInRadius)
 router.get('/:id', ifExist(Group), getGroup)
 

@@ -82,14 +82,16 @@ exports.forgotPassword = asyncUtil(async (req, res, next) => {
 
   // send email
   try {
-    const resetURL = `${req.protocol}://${req.get('host')}/api/v1/auth/resetpassword/${token}`
+    const resetURL = `${process.env.FRONTEND_DOMAIN}/auth/resetpassword/${token}`
     await sendEmail({
       email: user.email,
       subject: 'Reset password instructions for iCourse account',
       html: `
       <b> Someone has requested a link to change your password. <b>
       <br><br>
-      You can do this by sending a PUT request to: ${resetURL}
+      You can do this by clicking ${resetURL}.
+      <br><br>
+      If you don't know, just ignore this.
       <br><br>
       The URL expires after 10 minutes.
       `

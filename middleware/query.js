@@ -1,14 +1,14 @@
 /**
  * Middleware to do an advanced query to the model and find the result
  * @param {*} model : model to do findAndCountAll query
- * @param {*} include : other model to be included
+ * @param {*} optionParams : options need passed to finder
  * @param {*} flag : to indicate to pass query option out for further execution
  */
 const asyncUtil = require('./asyncUtil')
 const Op = require('sequelize').Op
 const getPagination = require('../utils/getPagination')
 
-const query = (model, include = [], ...flag) => asyncUtil(async (req, res, next) => {
+const query = (model, optionParams = {}, ...flag) => asyncUtil(async (req, res, next) => {
   let queryOption = {}
 
   const reqQuery = { ...req.query }
@@ -94,7 +94,7 @@ const query = (model, include = [], ...flag) => asyncUtil(async (req, res, next)
   // like: api/v1/courses & api/v1/groups/:groupId/courses
   if (Object.keys(req.params).length === 0) {
     // reset passed conditions
-    include = []
+    optionParams.include = []
     flag = []
   }
 
@@ -102,12 +102,13 @@ const query = (model, include = [], ...flag) => asyncUtil(async (req, res, next)
   const option = {
     // get the result of "count" right
     distinct: true,
-    include,
+    include: optionParams.include ? optionParams.include : [],
     attributes: {
+      include: optionParams.attributesInclude ? optionParams.attributesInclude : [],
       exclude: (model.name === 'User') ? ['password'] : []
     },
     // transform into nested object
-    nest: (include.length !== 0),
+    nest: (optionParams.include ? (optionParams.include.length !== 0) : false),
     ...queryOption
   }
 

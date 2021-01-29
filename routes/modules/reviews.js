@@ -14,10 +14,12 @@ const { getReviews, getReview, createReview, updateReview, deleteReview } = requ
 
 // route
 router.get('/', ifExist(Course),
-  query(Review, [
-    { model: Course, attributes: ['name', 'description'] },
-    { model: User, attributes: ['name'] }
-  ], 'byCourse'),
+  query(Review, {
+    include: [
+      { model: Course, attributes: ['name', 'description'] },
+      { model: User, attributes: ['name'] }
+    ]
+  }, 'byCourse'),
   getReviews)
 
 router.get('/:id', ifExist(Review), getReview)
