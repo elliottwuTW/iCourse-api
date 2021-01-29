@@ -16,6 +16,7 @@ exports.getCourses = asyncUtil(async (req, res, next) => {
     return res.status(200).json(res.queryResult)
   } else {
     // get courses belonging to a group
+    console.log('ing getCourses, res.query: ', res.query)
     const query = res.query
     const { count, rows } = await Course.findAndCountAll({
       ...query.option,
