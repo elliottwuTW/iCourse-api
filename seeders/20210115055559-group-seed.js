@@ -1,16 +1,21 @@
 'use strict'
 
-const groups = require('../_data/groups.json')
-const groupData = groups.map(group => ({
-  ...group,
-  createdAt: new Date(),
-  updatedAt: new Date()
-}))
+const { User, Group } = require('../models')
 
-const { Group } = require('../models')
+const groups = require('../_data/groups.json')
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
+    const users = await User.findAll({ where: { role: 'publisher' } })
+    const userIdPool = users.map(user => user.id)
+
+    const groupData = groups.map((group, index) => ({
+      ...group,
+      UserId: userIdPool[index],
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }))
+
     await Group.bulkCreate(groupData, {
       validate: true,
       individualHooks: true
