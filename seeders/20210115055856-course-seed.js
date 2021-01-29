@@ -10,11 +10,11 @@ function randomInteger (num) {
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     const groups = await Group.findAll()
-    const groupIdPool = groups.map(user => user.id)
+    const groupIdPool = groups.map(group => group.id)
 
     const courseData = courses.map(course => ({
       ...course,
-      GroupId: randomInteger(groupIdPool.length),
+      GroupId: groupIdPool[randomInteger(groupIdPool.length)],
       createdAt: new Date(),
       updatedAt: new Date()
     }))
