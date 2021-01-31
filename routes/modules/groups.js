@@ -11,7 +11,7 @@ const { getGroups, getGroup, getGroupsInRadius, createGroup, updateGroup, delete
 
 // middleware
 const { protect, permit } = require('../../middleware/auth')
-const { ifExist, groupInfoExist, checkValidation, checkEmail, checkGroupName, checkGroupDescr, checkGroupWebsite, checkGroupPhone } = require('../../middleware/validator')
+const { ifExist, groupInfoExist, checkValidation, checkEmail, checkGroupName, checkGroupDescr, checkGroupWebsite, checkPhone } = require('../../middleware/validator')
 const query = require('../../middleware/query')
 
 // more group information
@@ -37,14 +37,14 @@ router.get('/:id', ifExist(Group), getGroup)
 router.post('/', protect, permit('publisher', 'admin'),
   upload.single('photo'),
   // validation
-  groupInfoExist, checkEmail, checkGroupName, checkGroupDescr, checkGroupWebsite, checkGroupPhone, checkValidation,
+  groupInfoExist, checkEmail, checkGroupName, checkGroupDescr, checkGroupWebsite, checkPhone, checkValidation,
   createGroup)
 
 router.put('/:id', protect, permit('publisher', 'admin'),
   ifExist(Group),
   upload.single('photo'),
   // validation
-  checkEmail, checkGroupName, checkGroupDescr, checkGroupWebsite, checkGroupPhone, checkValidation,
+  checkEmail, checkGroupName, checkGroupDescr, checkGroupWebsite, checkPhone, checkValidation,
   updateGroup)
 
 router.delete('/:id', protect, permit('publisher', 'admin'), ifExist(Group), deleteGroup)

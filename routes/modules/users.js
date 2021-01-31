@@ -15,6 +15,11 @@ const { getUsers, getUser, getFollowGroups, createUser, updateUser, deleteUser }
 // all routes need protected
 router.use(protect)
 
+// other routes
+const orderRouter = require('./orders')
+// re-route
+router.use('/:id/orders', orderRouter)
+
 // route
 router.get('/:id/follows', ifExist(User), getFollowGroups)
 router.get('/:id', ifExist(User), getUser)
