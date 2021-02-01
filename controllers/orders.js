@@ -132,7 +132,13 @@ exports.updateOrderById = asyncUtil(async (req, res, next) => {
 // @route     PUT /api/v1/orders/sn/:sn
 // @access    Newebpay or Admin
 exports.updateOrderBySn = asyncUtil(async (req, res, next) => {
-  const order = await Order.findOne({ where: { sn: req.params.sn } })
+  const order = await Order.findOne({
+    where: { sn: req.params.sn },
+    include: [
+      { model: User, attributes: ['id', 'name', 'email'] },
+      { model: Course, as: 'courses', attributes: ['id'] }
+    ]
+  })
   if (!order) {
     return next(new ErrorRes(404, `Order with sn ${req.params.sn} does not exist`))
   }
