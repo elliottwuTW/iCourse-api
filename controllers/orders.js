@@ -1,4 +1,4 @@
-const { Order, OrderCourse } = require('../models')
+const { User, Order, OrderCourse, Course } = require('../models')
 
 const asyncUtil = require('../middleware/asyncUtil')
 
@@ -81,6 +81,28 @@ exports.cancelOrder = asyncUtil(async (req, res, next) => {
   }
 
   await order.update({ paymentStatus: '-1' })
+
+  return res.status(200).json({
+    status: 'success',
+    data: order
+  })
+})
+
+// @desc      Get a single order
+// @route     GET /api/v1/orders/:id
+// @access    Protect
+exports.getOrder = asyncUtil(async (req, res, next) => {
+  const order = await Order.findByPk(req.params.id, {
+    include: [
+      { model: User, attributes: ['id', 'name', 'email'] },
+      { model: Course, as: 'courses', attributes: ['id', 'name'] }
+    ]
+  })
+
+  // ownership
+  if (req.user.id !== order.UserId && req.user.role !== 'admin') {
+    return next(new ErrorRes(403, 'Not authorized to get this order'))
+  }
 
   return res.status(200).json({
     status: 'success',
