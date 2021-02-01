@@ -10,13 +10,18 @@ const { ifExist, userInfoExist, passwordExist, checkEmail, checkUserName, checkU
 const query = require('../../middleware/query')
 
 // request handler
-const { getUsers, getUser, getFollowGroups, createUser, updateUser, deleteUser } = require('../../controllers/users')
+const { getUsers, getUser, getUserPublic, createUser, updateUser, deleteUser } = require('../../controllers/users')
 
 // all routes need protected
 router.use(protect)
 
+// other routes
+const orderRouter = require('./orders')
+// re-route
+router.use('/:id/orders', orderRouter)
+
 // route
-router.get('/:id/follows', ifExist(User), getFollowGroups)
+router.get('/:id/public', ifExist(User), getUserPublic)
 router.get('/:id', ifExist(User), getUser)
 router.get('/', permit('admin'), query(User), getUsers)
 router.post('/', permit('admin'),

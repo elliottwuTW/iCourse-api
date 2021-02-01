@@ -2,6 +2,7 @@ const { body, validationResult } = require('express-validator')
 const { Group, Follow } = require('../models')
 
 const ErrorRes = require('../utils/ErrorRes')
+const isJSONString = require('../utils/isJSONString')
 
 // check the validation result
 exports.checkValidation = (req, res, next) => {
@@ -60,6 +61,13 @@ exports.reviewInfoExist = [
   body('title').exists().notEmpty().withMessage('Title is required'),
   body('rating').exists().notEmpty().withMessage('Rating is required')
 ]
+exports.orderInfoExist = [
+  body('name').exists().notEmpty().withMessage('Name is required'),
+  body('phone').exists().notEmpty().withMessage('Phone is required'),
+  body('address').exists().notEmpty().withMessage('Address is required'),
+  body('amount').exists().notEmpty().withMessage('Amount is required'),
+  body('courseInfoString').exists().notEmpty().withMessage('Course Info of the order is required')
+]
 
 /**
  * check updated fields
@@ -105,7 +113,7 @@ exports.checkGroupWebsite = [
     .matches(/^(?:(?:https?|ftp):\/\/)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?$/)
     .withMessage('Please use a valid URL with HTTP or HTTPS')
 ]
-exports.checkGroupPhone = [
+exports.checkPhone = [
   body('phone').trim()
     .optional()
     .matches(/^\(?([0-9]{2})\)?[-\s]?([0-9]{3})[-\s]?([0-9]{4,5})$/).withMessage('Phone format is not allowed')
@@ -176,3 +184,18 @@ exports.checkFollowExist = async (req, res, next) => {
   }
   next()
 }
+exports.checkOrderAmount = [
+  body('amount').trim()
+    .optional()
+    .isInt({ min: 0 }).withMessage('Amount must be greater than 0')
+]
+exports.checkOrderCourseInfoString = [
+  body('courseInfoString').trim()
+    .optional()
+    .custom((value) => {
+      if (!isJSONString(value)) {
+        throw new ErrorRes(400, 'courseInfoString format has some problem')
+      }
+      return true
+    })
+]

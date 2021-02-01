@@ -19,6 +19,11 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'CourseId',
         as: 'participants'
       })
+      Course.belongsToMany(models.Order, {
+        through: models.OrderCourse,
+        foreignKey: 'CourseId',
+        as: 'orders'
+      })
     }
   }
   Course.init({

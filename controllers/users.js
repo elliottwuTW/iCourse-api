@@ -1,4 +1,4 @@
-const { User, Group } = require('../models')
+const { User, Group, Course } = require('../models')
 
 const asyncUtil = require('../middleware/asyncUtil')
 const ErrorRes = require('../utils/ErrorRes')
@@ -33,24 +33,21 @@ exports.getUser = asyncUtil(async (req, res, next) => {
   })
 })
 
-// @desc      Get groups followed by user
-// @route     GET /api/v1/users/:id/follows
+// @desc      Get public info of an user
+// @route     GET /api/v1/users/:id/public
 // @access    Protect
-exports.getFollowGroups = asyncUtil(async (req, res, next) => {
+exports.getUserPublic = asyncUtil(async (req, res, next) => {
   const user = await User.findByPk(req.params.id, {
-    include: {
-      model: Group,
-      as: 'followGroups',
-      attributes: ['id', 'name', 'description', 'averageCost', 'averageRating', 'photo']
-    }
+    attributes: ['name'],
+    include: [
+      { model: Group, as: 'followGroups', attributes: ['id', 'photo'] },
+      { model: Course, as: 'ownCourses', attributes: ['id', 'photo'] }
+    ]
   })
 
   return res.status(200).json({
     status: 'success',
-    data: {
-      user: user.name,
-      groups: user.followGroups
-    }
+    data: user
   })
 })
 
