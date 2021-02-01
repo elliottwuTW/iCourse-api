@@ -109,3 +109,42 @@ exports.getOrder = asyncUtil(async (req, res, next) => {
     data: order
   })
 })
+
+// @desc      update an order by id
+// @route     PUT /api/v1/orders/:id
+// @access    Protect
+exports.updateOrderById = asyncUtil(async (req, res, next) => {
+  const order = await Order.findByPk(req.params.id)
+  // ownership
+  if (req.user.id !== order.UserId && req.user.role !== 'admin') {
+    return next(new ErrorRes(403, 'Not authorized to update this order'))
+  }
+
+  await order.update(req.body)
+
+  return res.status(200).json({
+    status: 'success',
+    data: order
+  })
+})
+
+// @desc      update an order by sn to set payment status
+// @route     PUT /api/v1/orders/sn/:sn
+// @access    Newebpay or Admin
+exports.updateOrderBySn = asyncUtil(async (req, res, next) => {
+  const order = await Order.findOne({ where: { sn: req.params.sn } })
+  if (!order) {
+    return next(new ErrorRes(404, `Order with sn ${req.params.sn} does not exist`))
+  }
+  // Only allow Newebpay
+  if (req.headers.payment_status_secret !== process.env.UPDATE_PAYMENT_STATUS) {
+    return next(new ErrorRes(403, 'Not authorized to update this order'))
+  }
+
+  await order.update(req.body)
+
+  return res.status(200).json({
+    status: 'success',
+    data: order
+  })
+})

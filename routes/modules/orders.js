@@ -10,7 +10,7 @@ const { ifExist, orderInfoExist, checkPhone, checkOrderAmount, checkOrderCourseI
 const query = require('../../middleware/query')
 
 // request handler
-const { getOrders, getOrder, createOrder, cancelOrder } = require('../../controllers/orders')
+const { getOrders, getOrder, createOrder, cancelOrder, updateOrderById, updateOrderBySn } = require('../../controllers/orders')
 
 // route
 router.get('/', protect, ifExist(User), query(Order, {
@@ -23,5 +23,8 @@ router.post('/', protect,
   orderInfoExist, checkPhone, checkOrderAmount, checkOrderCourseInfoString, checkValidation,
   createOrder)
 router.put('/:id/cancel', protect, ifExist(Order), cancelOrder)
+
+router.put('/:id', protect, ifExist(Order), updateOrderById)
+router.put('/sn/:sn', updateOrderBySn)
 
 module.exports = router

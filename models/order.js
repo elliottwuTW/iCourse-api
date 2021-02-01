@@ -32,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING
     },
     sn: {
-      type: DataTypes.INTEGER
+      type: DataTypes.BIGINT
     },
     amount: {
       allowNull: false,
