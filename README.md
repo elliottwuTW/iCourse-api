@@ -1,6 +1,9 @@
 ## iCourse API
 Backend API server for iCourse Node.js web application, a course directory website.
 
+### Document
+Check api details in [iCourse REST API](https://icourse-api.herokuapp.com/)
+
 ### App spec
 #### Authentication
 - Authenticated by JWT
@@ -20,75 +23,105 @@ Backend API server for iCourse Node.js web application, a course directory websi
 #### Authorization
 - Routes are accessible to specific roles
 
-#### Follows
-- Authentication needed
-- Logged in users can follow multiple groups
-  - Publisher can't follow owned group
-- Followers will receive email when the followed group publishes new course
+#### Models
+##### Users
+- Get user details
+  - Must be user self
+- Get user public info
+  - Login needed
+- Manage user CRUD
+  - Admin Only
 
-#### Groups
+##### Groups
 - List all groups in the database
   - Filtering, Sorting, Pagination, etc 
 - List all groups by radius from location with latitude and longitude
   - Filtering, Sorting, Pagination, etc 
 - Get single group
 - Create a group
-  - Authentication needed
+  - Login needed
   - Must be role of "publisher" or "admin"
   - Fields validation
   - Only one group per publisher
 - Update a group
-  - Authentication needed
+  - Login needed
   - Owner only
   - Fields validation
 - Delete a group
-  - Authentication needed
+  - Login needed
   - Owner only
 
-#### Courses
+##### Courses
 - List all courses in the database
   - Filtering, Sorting, Pagination, etc
 - List all courses of a group
   - Filtering, Sorting, Pagination, etc
 - Get single course
 - Create new course for a group
-  - Authentication needed
+  - Login needed
   - Must be role of "publisher" or "admin"
   - Owner only
   - Fields validation
 - Update a course
-  - Authentication needed
+  - Login needed
   - Owner only
   - Fields validation
 - Delete a course
-  - Authentication needed
+  - Login needed
   - Owner only
 - Calculate the average cost of all courses for a group
 
-#### Reviews
+##### Reviews
 - List all reviews in the database
   - Filtering, Sorting, Pagination, etc
 - List all reviews of a course
   - Filtering, Sorting, Pagination, etc
 - Get single review
 - Post a review for a course
-  - Authentication needed
+  - Login needed
   - Must be role of "user" or "admin"
   - Fields validation
   - Only one review per user
 - Update a review
-  - Authentication needed
+  - Login needed
   - Owner only
   - Fields validation
 - Delete a review
-  - Authentication needed
+  - Login needed
   - Owner only
 - Calculate the average rating from all reviews of different courses for a group
 
-### Document
-Check api details in [iCourse REST API](https://icourse-api.herokuapp.com/)
+##### Orders
+Login needed
+- List all orders in the database
+  - Filtering, Sorting, Pagination, etc
+  - Admin only
+- List all orders of an user
+  - Filtering, Sorting, Pagination, etc
+  - Owner only
+- Get an order of user
+  - Owner only
+- Cancel an order
+  - Owner only
+- Update serial number of an order when preparing for payment
+  - Owner only
+- Update payment status of an order
+  - Protected by secret header
 
-### Scheme
+#### Join Tables
+##### Follows
+Login needed
+- Users can follow multiple groups
+  - Publisher can't follow owned group
+- Followers will receive email when the followed group publishes new course
+
+##### Enrollments
+- Users get enrolled in the course after finishing payment
+
+##### OrderCourses
+- Course items are recorded when an order is set up
+
+### Scheme Structure
 ![](https://raw.githubusercontent.com/elliottwuTW/iCourse-api/master/public/scheme-structure.png)
 
 ### Usage
@@ -151,3 +184,5 @@ Check api details in [iCourse REST API](https://icourse-api.herokuapp.com/)
 #### Author 
 [elliottwuTW](https://github.com/elliottwuTW)
 
+#### Version
+1.2.0
