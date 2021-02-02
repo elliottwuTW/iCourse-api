@@ -6,7 +6,7 @@ const { User, Order, Course } = require('../../models')
 
 // middleware
 const { protect } = require('../../middleware/auth')
-const { ifExist, orderInfoExist, checkPhone, checkOrderAmount, checkOrderCourseInfoString, checkValidation } = require('../../middleware/validator')
+const { ifExist, orderInfoExist, checkEmail, checkOrderAmount, checkOrderCourseInfoString, checkValidation } = require('../../middleware/validator')
 const query = require('../../middleware/query')
 
 // request handler
@@ -20,7 +20,7 @@ router.get('/', protect, ifExist(User), query(Order, {
 }, 'byUser'), getOrders)
 router.get('/:id', protect, ifExist(Order), getOrder)
 router.post('/', protect,
-  orderInfoExist, checkPhone, checkOrderAmount, checkOrderCourseInfoString, checkValidation,
+  orderInfoExist, checkEmail, checkOrderAmount, checkOrderCourseInfoString, checkValidation,
   createOrder)
 router.put('/:id/cancel', protect, ifExist(Order), cancelOrder)
 

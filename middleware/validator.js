@@ -63,8 +63,7 @@ exports.reviewInfoExist = [
 ]
 exports.orderInfoExist = [
   body('name').exists().notEmpty().withMessage('Name is required'),
-  body('phone').exists().notEmpty().withMessage('Phone is required'),
-  body('address').exists().notEmpty().withMessage('Address is required'),
+  body('email').exists().notEmpty().withMessage('Email is required'),
   body('amount').exists().notEmpty().withMessage('Amount is required'),
   body('courseInfoString').exists().notEmpty().withMessage('Course Info of the order is required')
 ]
